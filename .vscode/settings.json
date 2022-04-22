@@ -1,4 +1,7 @@
 {
+  "[csv]": {
+    "files.insertFinalNewline": false
+  },
   "C_Cpp.vcFormat.newLine.beforeCatch": false,
   "C_Cpp.vcFormat.newLine.beforeElse": false,
   "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "sameLine",
@@ -10,15 +13,7 @@
   "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2 }",
   "files.associations": {
-    ".prettierrc": "json",
-    ".sequelizerc": "javascript",
     "stdio.h": "c",
-    "stdlib.h": "c",
-    "linked-list.h": "c",
-    "data.h": "c",
-    "stack.h": "c",
-    "generic-list-test.h": "c",
-    "vehicle.h": "c",
-    "type_traits": "c"
+    "stdlib.h": "c"
   }
 }
