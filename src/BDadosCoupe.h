@@ -6,24 +6,29 @@
 
 #include "ListaGenerica.h"
 
+#define MAX_NOME_BDADOS 51
+#define MAX_VERSAO_BDADOS 51
+
 typedef struct {
-  char NOME_BDADOS[50];
-  char VERSAO_BDADOS[50];
+  char NOME_BDADOS[MAX_NOME_BDADOS];
+  char VERSAO_BDADOS[MAX_VERSAO_BDADOS];
   ListaGenerica *LTabelas;
-  // ListaTabelas *LTabelas;
 } BDadosCoupe;
 
-typedef struct {
-  char NOME_TABELA[50];
-  ListaGenerica *LCampos;
-  ListaGenerica *LRegistos;
-  // ListaCampos *LCampos;
-  // ListaRegistos *LRegistos;
-} TABELA;
+#define MAX_NOME_TABELA 51
 
 typedef struct {
-  char NOME_CAMPO[50];
-  char TIPO[10];
+  char NOME_TABELA[MAX_NOME_TABELA];
+  ListaGenerica *LCampos;
+  ListaGenerica *LRegistos;
+} TABELA;
+
+#define MAX_NOME_CAMPO 51
+#define MAX_TIPO 11
+
+typedef struct {
+  char NOME_CAMPO[MAX_NOME_CAMPO];
+  char TIPO[MAX_TIPO];
 } CAMPO;
 
 #define REGISTO ListaGenerica
@@ -62,11 +67,11 @@ long int Memoria_BDados(BDadosCoupe *BD);
 long int Memoria_Desperdicada_BDados(BDadosCoupe *BD);
 
 // K) Exportar/Importar para/de Ficheiro (o retorno destas funções, permite saber se a função foi bem/mal-executada!):
-int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheir_csv);
-int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv);
-int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheir_csv);
-int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat);
-int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *fich_dat);
+int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheiro_csv);
+int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheiro_csv);
+int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheiro_csv);
+int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *ficheiro_dat);
+int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *ficheiro_dat);
 
 // L) Apagar o conteúdo de uma Tabela. A Tabela continua a existir na BDados, mas não contém os dados, ou seja, os
 // campos continuam, mas os registos são eliminados.

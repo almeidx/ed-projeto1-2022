@@ -18,8 +18,9 @@ typedef struct {
 } ListaGenerica;
 
 ListaGenerica *CriarLG();
-void DestuirLG(ListaGenerica *L, void (*func)(void *));
+void DestruirLG(ListaGenerica *L, void (*DestruirInfo)(void *));
 int AddLG(ListaGenerica *L, void *X);
-void MostrarLG(ListaGenerica *L, void (*fshow)(void *));
+void MostrarLG(ListaGenerica *L, void (*MostrarInfo)(void *));
+void *RemoveLG(ListaGenerica *L, void *X, int (*Comparador)(void *, void *));
 
 #endif  // LISTAGENERICA_H_INCLUDED

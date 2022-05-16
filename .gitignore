@@ -1,3 +1,6 @@
 *.exe
 *.dat
 words2.txt
+tempCodeRunnerFile*
+main
+!main.c
