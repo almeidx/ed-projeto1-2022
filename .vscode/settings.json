@@ -14,7 +14,8 @@
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2 }",
   "files.associations": {
     "stdio.h": "c",
-    "stdlib.h": "c"
+    "stdlib.h": "c",
+    "listagenerica.h": "c"
   },
   "cSpell.enabled": false
 }

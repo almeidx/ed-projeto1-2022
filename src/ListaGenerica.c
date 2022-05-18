@@ -1,70 +1,70 @@
 #include "ListaGenerica.h"
 
 ListaGenerica *CriarLG() {
-  ListaGenerica *L = (ListaGenerica *)malloc(sizeof(ListaGenerica));
-  if (!L) return NULL;
+  ListaGenerica *lista = (ListaGenerica *)malloc(sizeof(ListaGenerica));
+  if (!lista) return NULL;
 
-  L->Inicio = NULL;
-  L->NEL = 0;
+  lista->Inicio = NULL;
+  lista->NEL = 0;
 
-  return L;
+  return lista;
 }
 
-void DestruirLG(ListaGenerica *L, void (*DestruirInfo)(void *)) {
-  if (!L) return;
+void DestruirLG(ListaGenerica *lista, void (*destruir_info)(void *)) {
+  if (!lista) return;
 
-  if (L->Inicio) {
-    NOG *atual = L->Inicio, *prox = NULL;
+  if (lista->Inicio) {
+    NOG *atual = lista->Inicio, *prox = NULL;
     while (atual) {
       prox = atual->Prox;
-      DestruirInfo(atual->Info);
+      destruir_info(atual->Info);
       free(atual);
       atual = prox;
     }
   }
 
-  free(L);
+  free(lista);
 }
 
-int AddLG(ListaGenerica *L, void *X) {
-  if (!L) return INSUCESSO;
+int AddLG(ListaGenerica *lista, void *valor) {
+  if (!lista) return INSUCESSO;
 
   NOG *no = (NOG *)malloc(sizeof(NOG));
   if (!no) return INSUCESSO;
 
-  no->Info = X;
+  no->Info = valor;
   no->Prox = NULL;
 
-  if (!L->Inicio) {
-    L->Inicio = no;
+  if (!lista->Inicio) {
+    lista->Inicio = no;
   } else {
-    NOG *atual = L->Inicio;
+    NOG *atual = lista->Inicio;
     while (atual->Prox) {
       atual = atual->Prox;
     }
     atual->Prox = no;
   }
 
-  L->NEL++;
+  lista->NEL++;
 
   return SUCESSO;
 }
 
-void *RemoveLG(ListaGenerica *L, void *X, int (*Comparador)(void *, void *)) {
-  if (!L) return NULL;
+void *RemoveLG(ListaGenerica *lista, void *valor, int (*f_comparador)(void *, void *)) {
+  if (!lista) return NULL;
 
-  NOG *atual = L->Inicio, *ant = NULL;
+  NOG *atual = lista->Inicio, *ant = NULL;
 
   while (atual) {
-    if (Comparador(atual->Info, X)) {
+    if (f_comparador(atual->Info, valor)) {
       if (ant) {
         ant->Prox = atual->Prox;
       } else {
-        L->Inicio = atual->Prox;
+        lista->Inicio = atual->Prox;
       }
       void *info = atual->Info;
       free(atual);
-      L->NEL--;
+      lista->NEL--;
       return info;
     } else {
       ant = atual;
@@ -75,14 +75,38 @@ void *RemoveLG(ListaGenerica *L, void *X, int (*Comparador)(void *, void *)) {
   return NULL;
 }
 
-void MostrarLG(ListaGenerica *L, void (*MostrarInfo)(void *)) {
-  if (!L) return;
+int RemoveTodosLG(ListaGenerica *lista, void *valor, int (*f_comparador)(void *, void *)) {
+  if (!lista) return NULL;
 
-  if (L->Inicio) {
-    NOG *atual = L->Inicio;
-    while (atual) {
-      MostrarInfo(atual->Info);
+  NOG *atual = lista->Inicio, *ant = NULL;
+  int contador = 0;
+
+  while (atual) {
+    if (f_comparador(atual->Info, valor)) {
+      if (ant) {
+        ant->Prox = atual->Prox;
+      } else {
+        lista->Inicio = atual->Prox;
+      }
+      free(atual->Info);
+      free(atual);
+      lista->NEL--;
+      contador++;
+    } else {
+      ant = atual;
       atual = atual->Prox;
     }
+  }
+
+  return contador;
+}
+
+void MostrarLG(ListaGenerica *lista, void (*mostrar_info)(void *)) {
+  if (!lista || !lista->NEL) return;
+
+  NOG *atual = lista->Inicio;
+  while (atual) {
+    mostrar_info(atual->Info);
+    atual = atual->Prox;
   }
 }

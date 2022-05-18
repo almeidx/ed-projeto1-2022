@@ -30,26 +30,30 @@ int main() {
 
   Mostrar_BDados(BD);
 
-  printf("Memória em uso: %ld\n", Memoria_BDados(BD));
-  printf("Memória desperdiçada: %ld\n", Memoria_Desperdicada_BDados(BD));
+  // printf("Memória em uso: %ld\n", Memoria_BDados(BD));
+  // printf("Memória desperdiçada: %ld\n", Memoria_Desperdicada_BDados(BD));
 
   Exportar_Tabela_BDados_Excel(BD, nome_tabela, "BDados.csv");
 
   int n;
 
-  clock_t begin = clock();
+  // clock_t begin = clock();
 
-  n = SELECT(BD, "CLIENTES", condicao, "NOME", "Joana");
+  // n = SELECT(BD, "CLIENTES", condicao, "NOME", "Joana");
 
-  clock_t end = clock();
-  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  // clock_t end = clock();
+  // double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  printf("SELECT amount: %d\n", n);
-  printf("SELECT time spent: %f\n", time_spent);
+  // printf("SELECT amount: %d\n", n);
+  // printf("SELECT time spent: %f\n", time_spent);
 
-  DELETE_TABLE_DATA(T);
+  printf("DELETE amount: %d\n", DELETE(BD, "CLIENTES", condicao, "NOME", "Joana"));
 
-  DROP_TABLE(BD, nome_tabela);
+  // DELETE(BD, "CLIENTES", condicao, "NOME", "Joao");
+
+  // DELETE_TABLE_DATA(T);
+
+  // DROP_TABLE(BD, nome_tabela);
 
   Mostrar_BDados(BD);
 

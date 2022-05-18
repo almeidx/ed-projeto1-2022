@@ -368,7 +368,9 @@ int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheiro_c
   return SUCESSO;
 }
 
-int Importar_Tabela_BDados_Excel(BDadosCoupe *BD, char *nome_tabela, char *ficheiro_csv) {}
+int Importar_Tabela_BDados_Excel(BDadosCoupe *BD, char *nome_tabela, char *ficheiro_csv) {
+  return SUCESSO;
+}
 
 int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheiro_csv) {
   return SUCESSO;
@@ -455,11 +457,61 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
   return contador;
 }
 
-// O)	Remover todos os registos que obede�am a uma dada condi��o, a fun��o deve retornar o n�mero de registos
+int comparador_strings(void *s1, void *s2) {
+  if (!s1 || !s2) return 0;
+  return strcmp((char *)s1, (char *)s2) == 0;
+}
+
+// O)	Remover todos os registos que obedeçam a uma dada condição, a função deve retornar o número de registos
 // removidos.
 int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *nome_campo,
            char *valor_comparacao) {
-  return SUCESSO;
+  if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao) return INSUCESSO;
+
+  TABELA *T = Pesquisar_Tabela(BD, _tabela);
+  if (!T) return INSUCESSO;
+
+  NOG *registo = T->LRegistos->Inicio;
+  int contador = 0;
+
+  while (registo) {
+    REGISTO *R = registo->Info;
+
+    // ------
+    // Usar a função RemoveTodosLG
+
+    // // Inspirado por:
+    // // https://gitlab.gnome.org/GNOME/glib/-/blob/70ee43f1e9695b78908e10f7619998052ce62611/glib/gtypes.h#L108
+    // // O objetivo é fazer cast de uma função para que os argumentos sejam do tipo void *, ao invés de char *
+    // // typedef int (*cast_f_comparadora)(void *, void *);
+
+    // // contador += RemoveTodosLG(R, valor_comparacao, (cast_f_comparadora)f_condicao);
+
+    NOG *atual = R->Inicio, *ant = NULL;
+
+    while (atual) {
+      if (f_condicao(atual->Info, valor_comparacao)) {
+        if (ant) {
+          ant->Prox = atual->Prox;
+        } else {
+          R->Inicio = atual->Prox;
+        }
+        free(atual->Info);
+        free(atual);
+        R->NEL--;
+        contador++;
+      } else {
+        ant = atual;
+        atual = atual->Prox;
+      }
+    }
+
+    // -------
+
+    registo = registo->Prox;
+  }
+
+  return contador;
 }
 
 // P)	Atualizar todos os registos da tabela onde o Campo � dado, que obede�am a uma dada condição, a função
