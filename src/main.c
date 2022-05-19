@@ -33,7 +33,7 @@ int main() {
   // printf("Memória em uso: %ld\n", Memoria_BDados(BD));
   // printf("Memória desperdiçada: %ld\n", Memoria_Desperdicada_BDados(BD));
 
-  Exportar_Tabela_BDados_Excel(BD, nome_tabela, "BDados.csv");
+  // Exportar_Tabela_BDados_Excel(BD, nome_tabela, "BDados.csv");
 
   int n;
 
@@ -47,17 +47,38 @@ int main() {
   // printf("SELECT amount: %d\n", n);
   // printf("SELECT time spent: %f\n", time_spent);
 
-  printf("DELETE amount: %d\n", DELETE(BD, "CLIENTES", condicao, "NOME", "Joana"));
+  // clock_t begin = clock();
 
-  // DELETE(BD, "CLIENTES", condicao, "NOME", "Joao");
+  // n = DELETE(BD, "CLIENTES", condicao, "NOME", "Joana");
+
+  // clock_t end = clock();
+  // double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+
+  // printf("DELETE amount: %d\n", n);
+  // printf("DELETE time spent: %f\n", time_spent);
+
+  UPDATE(BD, "CLIENTES", condicao, "NOME", "Joana", "CLIENTES", "Jaquim");
 
   // DELETE_TABLE_DATA(T);
 
   // DROP_TABLE(BD, nome_tabela);
 
+  char nome_tabela_2[] = "NABOS";
+  TABELA *T2 = Criar_Tabela(BD, nome_tabela_2);
+  Add_Campo_Tabela(T2, "ID", "INT");
+  Add_Campo_Tabela(T2, "REGION", "STRING");
+
+  Add_Valores_Tabela(T2, "1;Viseu");
+  Add_Valores_Tabela(T2, "2;Biseu");
+  Add_Valores_Tabela_BDados(BD, nome_tabela_2, "3;Lisboa");
+
   Mostrar_BDados(BD);
 
-  printf("Memória em uso depois de apagar: %ld\n", Memoria_BDados(BD));
+  Exportar_BDados_Excel(BD, "BDados.csv");
+
+  Mostrar_BDados(BD);
+
+  // printf("Memória em uso depois de apagar: %ld\n", Memoria_BDados(BD));
 
   Destruir_BDados(BD);
 

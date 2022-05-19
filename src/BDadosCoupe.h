@@ -8,6 +8,7 @@
 
 #define MAX_NOME_BDADOS 51
 #define MAX_VERSAO_BDADOS 51
+#define SEPARADOR_TABELA "------------------------------------------"
 
 typedef struct {
   char NOME_BDADOS[MAX_NOME_BDADOS];

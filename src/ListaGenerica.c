@@ -76,7 +76,7 @@ void *RemoveLG(ListaGenerica *lista, void *valor, int (*f_comparador)(void *, vo
 }
 
 int RemoveTodosLG(ListaGenerica *lista, void *valor, int (*f_comparador)(void *, void *)) {
-  if (!lista) return NULL;
+  if (!lista) return 0;
 
   NOG *atual = lista->Inicio, *ant = NULL;
   int contador = 0;
@@ -94,8 +94,9 @@ int RemoveTodosLG(ListaGenerica *lista, void *valor, int (*f_comparador)(void *,
       contador++;
     } else {
       ant = atual;
-      atual = atual->Prox;
     }
+
+    atual = atual->Prox;
   }
 
   return contador;

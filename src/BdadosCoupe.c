@@ -122,7 +122,7 @@ void Mostrar_Lista_Campos(TABELA *T) {
   NOG *aux = T->LCampos->Inicio;
   while (aux) {
     CAMPO *C = (CAMPO *)aux->Info;
-    printf("\t\t%s (%s)\n", C->NOME_CAMPO, C->TIPO);
+    printf("\t\t\t%s (%s)\n", C->NOME_CAMPO, C->TIPO);
     aux = aux->Prox;
   }
 }
@@ -133,7 +133,7 @@ void Mostrar_Lista_Registos(TABELA *T) {
     REGISTO *R = (REGISTO *)aux->Info;
     NOG *aux2 = R->Inicio;
     while (aux2) {
-      printf("\t\t%s\n", (char *)aux2->Info);
+      printf("\t\t\t%s\n", (char *)aux2->Info);
       aux2 = aux2->Prox;
     }
     aux = aux->Prox;
@@ -143,13 +143,13 @@ void Mostrar_Lista_Registos(TABELA *T) {
 void Mostrar_Tabela(TABELA *T) {
   if (!T) return;
 
-  printf("----- TABELA -----\n");
-  printf("\tNome: %s\n", T->NOME_TABELA);
-  printf("\tCampos:\n");
+  printf("\t----- TABELA -----\n");
+  printf("\t\tNome: %s\n", T->NOME_TABELA);
+  printf("\t\tCampos:\n");
   Mostrar_Lista_Campos(T);
-  printf("\tRegistos:\n");
+  printf("\t\tRegistos:\n");
   Mostrar_Lista_Registos(T);
-  printf("------------------\n");
+  printf("\t------------------\n");
 }
 
 // H)	Mostrar toda a base de dados, deverá mostrar todas as Tabelas da BDados.
@@ -330,6 +330,10 @@ int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheiro_c
   FILE *f = fopen(ficheiro_csv, "w");
   if (!f) return INSUCESSO;
 
+  // Para que o ficheiro seja lido corretamente pelo Excel
+  // https://superuser.com/a/420025/1100828
+  fprintf(f, "sep=;\n");
+
   NOG *campo = T->LCampos->Inicio;
   while (campo) {
     CAMPO *C = campo->Info;
@@ -373,6 +377,64 @@ int Importar_Tabela_BDados_Excel(BDadosCoupe *BD, char *nome_tabela, char *fiche
 }
 
 int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheiro_csv) {
+  if (!BD || !ficheiro_csv) return INSUCESSO;
+
+  FILE *f = fopen(ficheiro_csv, "w");
+  if (!f) return INSUCESSO;
+
+  NOG *tabela = BD->LTabelas->Inicio;
+  if (!tabela) {
+    fclose(f);
+    return INSUCESSO;
+  }
+
+  // Para que o ficheiro seja lido corretamente pelo Excel
+  // https://superuser.com/a/420025/1100828
+  fprintf(f, "sep=;\n");
+
+  while (tabela) {
+    TABELA *T = tabela->Info;
+
+    NOG *campo = T->LCampos->Inicio;
+    while (campo) {
+      CAMPO *C = campo->Info;
+      if (campo->Prox) {
+        fprintf(f, "%s;", C->NOME_CAMPO);
+      } else {
+        fprintf(f, "%s", C->NOME_CAMPO);
+      }
+      campo = campo->Prox;
+    }
+
+    fprintf(f, "\n");
+
+    NOG *registo = T->LRegistos->Inicio;
+    while (registo) {
+      REGISTO *R = registo->Info;
+
+      NOG *registo_atual = R->Inicio;
+      while (registo_atual) {
+        if (registo_atual->Prox) {
+          fprintf(f, "%s;", registo_atual->Info);
+        } else {
+          fprintf(f, "%s", registo_atual->Info);
+        }
+
+        registo_atual = registo_atual->Prox;
+      }
+
+      fprintf(f, "\n");
+
+      registo = registo->Prox;
+    }
+
+    tabela = tabela->Prox;
+    if (tabela) {
+      fprintf(f, SEPARADOR_TABELA "\n");
+    }
+  }
+
+  fclose(f);
   return SUCESSO;
 }
 
@@ -457,19 +519,14 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
   return contador;
 }
 
-int comparador_strings(void *s1, void *s2) {
-  if (!s1 || !s2) return 0;
-  return strcmp((char *)s1, (char *)s2) == 0;
-}
-
 // O)	Remover todos os registos que obedeçam a uma dada condição, a função deve retornar o número de registos
 // removidos.
 int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *nome_campo,
            char *valor_comparacao) {
-  if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao) return INSUCESSO;
+  if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao) return 0;
 
   TABELA *T = Pesquisar_Tabela(BD, _tabela);
-  if (!T) return INSUCESSO;
+  if (!T) return 0;
 
   NOG *registo = T->LRegistos->Inicio;
   int contador = 0;
@@ -497,7 +554,11 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
           R->Inicio = atual->Prox;
         }
         free(atual->Info);
-        free(atual);
+
+        NOG *tmp = atual;
+        atual = atual->Prox;
+        free(tmp);
+
         R->NEL--;
         contador++;
       } else {
@@ -514,9 +575,42 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
   return contador;
 }
 
-// P)	Atualizar todos os registos da tabela onde o Campo � dado, que obede�am a uma dada condição, a função
+// P)	Atualizar todos os registos da tabela onde o Campo � dado, que obedeçam a uma dada condição, a função
 // deve retornar o número de registos que foram atualizados.
 int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *campo_comp, char *valor_campo_comp,
            char *nome_campo_update, char *valor_campo_update) {
-  return SUCESSO;
+  if (!BD || !_tabela || !f_condicao || !campo_comp || !valor_campo_comp || !nome_campo_update || !valor_campo_update) {
+    return 0;
+  }
+
+  TABELA *T = Pesquisar_Tabela(BD, _tabela);
+  if (!T) return 0;
+
+  long len = strlen(valor_campo_update) + 1;
+  NOG *registo = T->LRegistos->Inicio;
+  int contador = 0;
+
+  while (registo) {
+    REGISTO *R = registo->Info;
+
+    NOG *atual = R->Inicio, *ant = NULL;
+
+    while (atual) {
+      if (f_condicao(atual->Info, valor_campo_comp)) {
+        free(atual->Info);
+
+        atual->Info = (char *)malloc(sizeof(char) * len);
+        strcpy(atual->Info, valor_campo_update);
+
+        contador++;
+      } else {
+        ant = atual;
+        atual = atual->Prox;
+      }
+    }
+
+    registo = registo->Prox;
+  }
+
+  return contador;
 }
