@@ -1,5 +1,6 @@
 #ifndef BDADOSCOUPE_H_INCLUDED
 #define BDADOSCOUPE_H_INCLUDED
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,6 +10,7 @@
 #define MAX_NOME_BDADOS 51
 #define MAX_VERSAO_BDADOS 51
 #define SEPARADOR_TABELA "------------------------------------------"
+#define EXCEL_SEPARADOR "sep=;"
 
 typedef struct {
   char NOME_BDADOS[MAX_NOME_BDADOS];
@@ -33,6 +35,7 @@ typedef struct {
 } CAMPO;
 
 #define REGISTO ListaGenerica
+#define MAX_LINHA 120
 
 // A) Criar a Base de dados;
 BDadosCoupe *Criar_BDados(char *nome_bd, char *versao);
@@ -94,5 +97,7 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 // retornar o número de registos que foram atualizados.
 int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *campo_comp, char *valor_campo_comp,
            char *nome_campo_update, char *valor_campo_update);
+
+void Destruir_Registo(void *info);
 
 #endif  // BDADOSCOUPE_H_INCLUDED

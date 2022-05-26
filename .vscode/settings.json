@@ -13,9 +13,12 @@
   "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
   "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: Google, IndentWidth: 2 }",
   "files.associations": {
+    ".prettierrc": "json",
+    ".sequelizerc": "javascript",
     "stdio.h": "c",
     "stdlib.h": "c",
-    "listagenerica.h": "c"
+    "listagenerica.h": "c",
+    "bdadoscoupe.h": "c"
   },
   "cSpell.enabled": false
 }

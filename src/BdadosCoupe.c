@@ -1,3 +1,6 @@
+#ifndef BDADOSCOUPE_C_INCLUDED
+#define BDADOSCOUPE_C_INCLUDED
+
 #include "BDadosCoupe.h"
 
 #include "ListaGenerica.c"
@@ -64,7 +67,7 @@ int Add_Valores_Tabela(TABELA *T, char *dados) {
 
   char *token = strtok(dados_clone, ";");
   if (!token) {
-    free(registo);
+    DestruirLG(registo, Destruir_Registo);
     return INSUCESSO;
   }
 
@@ -81,13 +84,14 @@ int Add_Valores_Tabela(TABELA *T, char *dados) {
 
   // Não podemos usar esta função diretamente no loop acima por causa do strtok
   for (int j = 0; j < T->LCampos->NEL; j++) {
-    AddLG(registo, dados_holder[j]);
+    char *d = dados_holder[j];
+
+    AddLG(registo, d);
   }
 
   AddLG(T->LRegistos, registo);
 
   free(dados_clone);
-  free(dados_holder);
 
   return SUCESSO;
 }
@@ -120,11 +124,18 @@ void Mostrar_Tabela_NOME(BDadosCoupe *BD, char *tabela) {
 
 void Mostrar_Lista_Campos(TABELA *T) {
   NOG *aux = T->LCampos->Inicio;
+  int i = 0;
   while (aux) {
     CAMPO *C = (CAMPO *)aux->Info;
-    printf("\t\t\t%s (%s)\n", C->NOME_CAMPO, C->TIPO);
+    if (i == 0) {
+      printf("\t\t\t%s (%s)", C->NOME_CAMPO, C->TIPO);
+    } else {
+      printf(" | %s (%s)", C->NOME_CAMPO, C->TIPO);
+    }
     aux = aux->Prox;
+    i++;
   }
+  printf("\n");
 }
 
 void Mostrar_Lista_Registos(TABELA *T) {
@@ -132,10 +143,18 @@ void Mostrar_Lista_Registos(TABELA *T) {
   while (aux) {
     REGISTO *R = (REGISTO *)aux->Info;
     NOG *aux2 = R->Inicio;
+    int i = 0;
     while (aux2) {
-      printf("\t\t\t%s\n", (char *)aux2->Info);
+      if (i == 0) {
+        printf("\t\t\t%s", (char *)aux2->Info);
+      } else {
+        printf(" | %s", (char *)aux2->Info);
+      }
       aux2 = aux2->Prox;
+      i++;
     }
+    printf("\n");
+
     aux = aux->Prox;
   }
 }
@@ -372,10 +391,6 @@ int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheiro_c
   return SUCESSO;
 }
 
-int Importar_Tabela_BDados_Excel(BDadosCoupe *BD, char *nome_tabela, char *ficheiro_csv) {
-  return SUCESSO;
-}
-
 int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheiro_csv) {
   if (!BD || !ficheiro_csv) return INSUCESSO;
 
@@ -439,6 +454,88 @@ int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheiro_csv) {
 }
 
 int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheiro_csv) {
+  if (!BD || !ficheiro_csv || !BD->LTabelas->NEL) return INSUCESSO;
+
+  FILE *f = fopen(ficheiro_csv, "r");
+  if (!f) return INSUCESSO;
+
+  NOG *no_tabela = BD->LTabelas->Inicio;
+  TABELA *tabela = (TABELA *)no_tabela->Info;
+
+  char *linha = (char *)malloc(sizeof(char) * MAX_LINHA), *token, **dados_holder = NULL;
+  int n_linha = 0, i, j;
+  size_t len;
+
+  while (!feof(f)) {
+    fgets(linha, MAX_LINHA, f);
+
+    if (linha[0] == '\n') continue;
+
+    len = strlen(linha);
+    if (len > 0 && linha[len - 1] == '\n') linha[len - 1] = '\0';
+
+    if (len - 1 == 0) {
+      continue;
+    }
+
+    if (strcmp(linha, EXCEL_SEPARADOR) == 0) {
+      continue;
+    }
+
+    if (n_linha == 0) {
+      n_linha++;
+      continue;
+    } else if (strcmp(linha, SEPARADOR_TABELA) == 0) {
+      n_linha = 0;
+      no_tabela = no_tabela->Prox;
+      if (no_tabela) tabela = (TABELA *)no_tabela->Info;
+      continue;
+    }
+
+    if (!no_tabela) {
+      break;
+    }
+
+    n_linha++;
+
+    token = strtok(linha, ";");
+    if (!token) {
+      break;
+    }
+
+    dados_holder = (char **)malloc(sizeof(char *) * tabela->LCampos->NEL);
+    i = 0;
+
+    while (token) {
+      dados_holder[i] = (char *)malloc(sizeof(char) * (strlen(token) + 1));
+      strcpy(dados_holder[i], token);
+
+      token = strtok(NULL, ";");
+      i++;
+    }
+
+    REGISTO *registo = CriarLG();
+    if (!registo) {
+      for (j = 0; j < i; j++) {
+        free(dados_holder[j]);
+      }
+      free(dados_holder);
+      break;
+    }
+
+    // Não podemos usar esta função diretamente no loop acima por causa do strtok
+    for (j = 0; j < i; j++) {
+      char *dado = dados_holder[j];
+
+      AddLG(registo, dado);
+    }
+
+    AddLG(tabela->LRegistos, registo);
+  }
+
+  free(linha);
+  fclose(f);
+
   return SUCESSO;
 }
 
@@ -614,3 +711,5 @@ int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 
   return contador;
 }
+
+#endif  // BDADOSCOUPE_C_INCLUDED
