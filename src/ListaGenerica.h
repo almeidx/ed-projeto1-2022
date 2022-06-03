@@ -48,15 +48,6 @@ int AddLG(ListaGenerica *lista, void *valor);
 void *RemoveLG(ListaGenerica *lista, void *valor, int (*f_comparador)(void *, void *));
 
 /**
- * @brief Remove todos os items de uma lista que satisfazem a função de comparadora passada
- * @param lista Lista a ser manipulada
- * @param valor Valor a ser comparado
- * @param f_comparador Função para comparar a `Info` de cada elemento com `X`
- * @return A quantidade de elementos removidos
- */
-int RemoveTodosLG(ListaGenerica *lista, void *valor, int (*f_comparador)(void *, void *));
-
-/**
  * @brief Mostra todos os items de uma lista
  * @param lista Lista a ser mostrada
  * @param mostrar_info Função para mostrar a `Info` de cada elemento

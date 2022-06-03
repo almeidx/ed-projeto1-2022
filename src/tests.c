@@ -117,18 +117,67 @@ void test_memoria_bdados() {
     Destruir_BDados(BD);
 }
 
+int f_comparacao(char *a, char *b) {
+    return strcmp(a, b) == 0;
+}
+
+void test_select() {
+    BDadosCoupe *BD = bdados_base();
+    Importar_BDados_Excel(BD, FICHEIRO_BDADOS_EXCEL);
+
+    Mostrar_BDados(BD);
+
+    printf("SELECT FROM \"PESSOAS\" WHERE \"ID\" = \"24\" amount: %d\n", SELECT(BD, "PESSOAS", f_comparacao, "ID", "24"));
+    printf("SELECT FROM \"PESSOAS\" WHERE \"NOME\" = \"Joao\" amount: %d\n", SELECT(BD, "PESSOAS", f_comparacao, "NOME", "Joao"));
+
+    Destruir_BDados(BD);
+}
+
+void test_select_large() {
+    BDadosCoupe *BD = Criar_BDados("BDadosCoupe", "1.0");
+
+    // ID_REGION;TIPO_VEICULO;NUMERO;TIMESTAMP;DATA
+    TABELA *T = Criar_Tabela(BD, "VEICULOS");
+    Add_Campo_Tabela(T, "ID_REGION", "INT");
+    Add_Campo_Tabela(T, "TIPO_VEICULO", "STRING");
+    Add_Campo_Tabela(T, "NUMERO", "INT");
+    Add_Campo_Tabela(T, "TIMESTAMP", "INT");
+    Add_Campo_Tabela(T, "DATA", "STRING");
+
+    Importar_BDados_Excel(BD, "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\Vehicle_Data.csv");
+
+//    Mostrar_BDados(BD);
+
+    printf("SELECT FROM \"VEICULOS\" WHERE \"TIMESTAMP\" = \"\"1592589883\"\" amount: %d\n", SELECT(BD, "VEICULOS", f_comparacao, "TIMESTAMP", "\"1592589883\""));
+    printf("SELECT FROM \"VEICULOS\" WHERE \"TIPO_VEICULO\" = \"\"cars\"\" amount: %d\n", SELECT(BD, "VEICULOS", f_comparacao, "TIPO_VEICULO", "\"cars\""));
+
+    Destruir_BDados(BD);
+}
+
+void test_delete() {
+    BDadosCoupe *BD = bdados_base();
+    Importar_BDados_Excel(BD, FICHEIRO_BDADOS_EXCEL);
+
+    Mostrar_BDados(BD);
+
+    printf("DELETE FROM \"PESSOAS\" WHERE \"ID\" = \"24\" amount: %d\n", DELETE(BD, "PESSOAS", f_comparacao, "ID", "24"));
+    printf("DELETE FROM \"PESSOAS\" WHERE \"NOME\" = \"Joao\" amount: %d\n", DELETE(BD, "PESSOAS", f_comparacao, "NOME", "Joao"));
+
+    Mostrar_BDados(BD);
+
+    Destruir_BDados(BD);
+}
+
 BDadosCoupe *bdados_base() {
     BDadosCoupe *BD = Criar_BDados("BDadosCoupe", "1.0");
 
     // ID;NOME
-    char nome_tabela[] = "PESSOAS";
-    TABELA *T = Criar_Tabela(BD, nome_tabela);
+    TABELA *T = Criar_Tabela(BD, "PESSOAS");
     Add_Campo_Tabela(T, "ID", "INT");
     Add_Campo_Tabela(T, "NOME", "STRING");
 
     // ID;REGION
-    char nome_tabela2[] = "REGIONS";
-    TABELA *T2 = Criar_Tabela(BD, nome_tabela2);
+    TABELA *T2 = Criar_Tabela(BD, "REGIONS");
     Add_Campo_Tabela(T2, "ID", "INT");
     Add_Campo_Tabela(T2, "REGION", "STRING");
 

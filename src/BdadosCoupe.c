@@ -1,16 +1,13 @@
-#ifndef BDADOSCOUPE_C_INCLUDED
-#define BDADOSCOUPE_C_INCLUDED
-
 #include "BDadosCoupe.h"
 
 #include "ListaGenerica.h"
 
-/** \brief Criar_BDados: A) Criar a Base de dados
+/**
+ * \brief Criar_BDados: A) Criar a Base de dados
  *
  * \param nome_bd char* : Nome da Base de Dados
  * \param versao char*  : Versão da Base de Dados
  * \return BDadosCoupe* : Ponteiro para a Base de Dados Criada
- *
  */
 BDadosCoupe *Criar_BDados(char *nome_bd, char *versao) {
     if (!nome_bd || !versao) return NULL;
@@ -30,8 +27,8 @@ BDadosCoupe *Criar_BDados(char *nome_bd, char *versao) {
     return BD;
 }
 
-/** \brief B) Criar uma Tabela na Base de Dados,
- * a tabela deve ser inserida à lista de tabelas da BD
+/**
+ * \brief B) Criar uma Tabela na Base de Dados, a tabela deve ser inserida à lista de tabelas da BD
  *
  * \param BD BDadosCoupe* : Ponteiro para a Base de Dados
  * \param nome_tabela char* : Nome da tabela a Criar
@@ -70,7 +67,8 @@ TABELA *Criar_Tabela(BDadosCoupe *BD, char *nome_tabela) {
     return T;
 }
 
-/** \brief C)  Adicionar um campo a uma tabela.
+/**
+ * \brief C)  Adicionar um campo a uma tabela.
  *
  * \param T TABELA* : Ponteiro para a tabela
  * \param nome_campo char* : Nome do campo
@@ -727,13 +725,6 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela) {
     return RemoveLG(BD->LTabelas, T, comparar_tabela) != NULL;
 }
 
-// Função auxiliar utilizada na função DROP_TABLE
-int comparar_tabela(void *T1, void *T2) {
-    if (!T1 || !T2) return 0;
-    TABELA *_T1 = (TABELA *) T1, *_T2 = (TABELA *) T2;
-    return strcmp(_T1->NOME_TABELA, _T2->NOME_TABELA) == 0;
-}
-
 // N)	Selecionar (Apresentar no ecran!) da base de dados todos os registos que obedeçam a uma dada condição,
 // a função deve retornar o número de registos selecionados. (Ter em atenção o exemplo das aulas teóricas!). Nota:
 // esta é certamente a funcionalidade mais usada num sistema de base de dados, por isso se estiver bem otimizada.
@@ -742,44 +733,68 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
            char *valor_comparacao) {
     if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao) return INSUCESSO;
 
+#ifdef DEBUG_TIMINGS
+    clock_t start = clock();
+#endif
+
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
     if (!T) return INSUCESSO;
 
+    int i, contador = 0;
+    CAMPO *C = encontrar_indice_campo(T, nome_campo, &i);
+    if (!C) return INSUCESSO;
+
     NOG *registo = T->LRegistos->Inicio;
-    int contador = 0;
-
-    NOG *campo = T->LCampos->Inicio;
-    CAMPO *C = NULL;
-    int i = -1, found = 0;
-
-    // FIXME: Verificar só o campo correto
-
-    while (!found || i < T->LCampos->NEL) {
-        CAMPO *C_ = (CAMPO *) campo->Info;
-        if (strcmp(C_->NOME_CAMPO, nome_campo) == 0) {
-            C = C_;
-            found = 1;
-            break;
-        }
-        i++;
-    }
-
     while (registo) {
         REGISTO *R = (REGISTO *) registo->Info;
 
+        int j = 0;
         NOG *registo_atual = R->Inicio;
-        while (registo_atual) {
-            if (f_condicao((char *) registo_atual->Info, valor_comparacao)) {
-                printf("[%s]: %s\n", __FUNCTION__, registo_atual->Info);
-                contador++;
+        while (registo_atual && j <= i) { // Percorrer todos os campos do registo até encontrar o do campo desejado
+            if (j == i) { // Comparar apenas se o campo for o que se pretende comparar
+                if (f_condicao((char *) registo_atual->Info,
+                               valor_comparacao)) { // Registo foi encontrado, apresentar no ecrã
+                    printf("[%s]: ", __FUNCTION__);
+
+                    int k = 0;
+                    NOG *reg = R->Inicio;
+                    while (reg) {
+                        if (k == 0) { // Só incluir barra no início se não for o primeiro campo
+                            printf("%s", (char *) reg->Info);
+                            k++;
+                        } else {
+                            printf(" | %s", (char *) reg->Info);
+                        }
+                        reg = reg->Prox;
+                    }
+
+                    printf("\n");
+                    contador++;
+                }
+
                 break;
             }
 
+            j++;
             registo_atual = registo_atual->Prox;
         }
 
         registo = registo->Prox;
     }
+
+#ifdef DEBUG_TIMINGS
+    clock_t end = clock();
+
+    FILE *f = fopen(FICHEIRO_DEBUG_TIMINGS, "a");
+    if (f) {
+        fprintf(f, "%s (tabela: %s, campo: %s, valor: %s, qnt: %d): %f\n", __FUNCTION__, _tabela, nome_campo,
+                valor_comparacao,
+                contador,
+                (double) (end - start) / CLOCKS_PER_SEC);
+
+        fclose(f);
+    }
+#endif
 
     return contador;
 }
@@ -788,54 +803,70 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 // removidos.
 int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *nome_campo,
            char *valor_comparacao) {
-    if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao) return 0;
+    if (!BD || !_tabela || !f_condicao || !nome_campo || !valor_comparacao) return INSUCESSO;
+
+#ifdef DEBUG_TIMINGS
+    clock_t start = clock();
+#endif
 
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
-    if (!T) return 0;
+    if (!T) return INSUCESSO;
 
-    NOG *registo = T->LRegistos->Inicio;
-    int contador = 0;
+    int i, contador = 0, para_remover = 0;
+    CAMPO *C = encontrar_indice_campo(T, nome_campo, &i);
+    if (!C) return INSUCESSO;
 
+    NOG *registo = T->LRegistos->Inicio, *registo_anterior = NULL;
     while (registo) {
         REGISTO *R = registo->Info;
 
-        // ------
-        // Usar a função RemoveTodosLG
-
-        // // Inspirado por:
-        // // https://gitlab.gnome.org/GNOME/glib/-/blob/70ee43f1e9695b78908e10f7619998052ce62611/glib/gtypes.h#L108
-        // // O objetivo é fazer cast de uma função para que os argumentos sejam do tipo void *, ao invés de char *
-        // // typedef int (*cast_f_comparadora)(void *, void *);
-
-        // // contador += RemoveTodosLG(R, valor_comparacao, (cast_f_comparadora)f_condicao);
-
-        NOG *atual = R->Inicio, *ant = NULL;
-
-        while (atual) {
-            if (f_condicao(atual->Info, valor_comparacao)) {
-                if (ant) {
-                    ant->Prox = atual->Prox;
-                } else {
-                    R->Inicio = atual->Prox;
+        int j = 0;
+        NOG *atual = R->Inicio;
+        while (atual && j <= i) { // Percorrer todos os campos do registo até encontrar o do campo desejado
+            if (i == j) { // Comparar apenas se o campo for o que se pretende comparar
+                if (f_condicao((char *) atual->Info, valor_comparacao)) {
+                    para_remover = 1;
                 }
-                free(atual->Info);
-
-                NOG *tmp = atual;
-                atual = atual->Prox;
-                free(tmp);
-
-                R->NEL--;
-                contador++;
-            } else {
-                ant = atual;
-                atual = atual->Prox;
+                break;
             }
+            atual = atual->Prox;
         }
 
-        // -------
+        if (para_remover) {
+            NOG *aux = registo;
+            registo = registo->Prox;
 
-        registo = registo->Prox;
+            if (registo_anterior) {
+                registo_anterior->Prox = registo;
+            } else {
+                T->LRegistos->Inicio = registo;
+            }
+
+            // TODO: Causes segfault:
+//            DestruirLG((REGISTO *)aux->Info, Destruir_Registo);
+//            free(aux);
+
+            contador++;
+            para_remover = 0;
+        } else {
+            registo = registo->Prox;
+            registo_anterior = registo;
+        }
     }
+
+#ifdef DEBUG_TIMINGS
+    clock_t end = clock();
+
+    FILE *f = fopen(FICHEIRO_DEBUG_TIMINGS, "a");
+    if (f) {
+        fprintf(f, "%s (tabela: %s, campo: %s, valor: %s, qnt: %d): %f\n", __FUNCTION__, _tabela, nome_campo,
+                valor_comparacao,
+                contador,
+                (double) (end - start) / CLOCKS_PER_SEC);
+
+        fclose(f);
+    }
+#endif
 
     return contador;
 }
@@ -846,11 +877,11 @@ int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
            char *nome_campo_update, char *valor_campo_update) {
     if (!BD || !_tabela || !f_condicao || !campo_comp || !valor_campo_comp || !nome_campo_update ||
         !valor_campo_update) {
-        return 0;
+        return INSUCESSO;
     }
 
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
-    if (!T) return 0;
+    if (!T) return INSUCESSO;
 
     long len = strlen(valor_campo_update) + 1;
     NOG *registo = T->LRegistos->Inicio;
@@ -881,4 +912,19 @@ int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     return contador;
 }
 
-#endif  // BDADOSCOUPE_C_INCLUDED
+// Função auxiliar utilizada na função DROP_TABLE
+int comparar_tabela(void *T1, void *T2) {
+    if (!T1 || !T2) return 0;
+    return strcmp(((TABELA *) T1)->NOME_TABELA, ((TABELA *) T2)->NOME_TABELA) == 0;
+}
+
+// Função auxiliar utilizada na função SELECT
+CAMPO *encontrar_indice_campo(TABELA *T, char *nome_campo, int *indice) {
+    NOG *campo = T->LCampos->Inicio;
+    for (*indice = 0; *indice < T->LCampos->NEL; (*indice)++) {
+        CAMPO *C = (CAMPO *) campo->Info;
+        if (strcmp(C->NOME_CAMPO, nome_campo) == 0) return C;
+        campo = campo->Prox;
+    }
+    return NULL;
+}

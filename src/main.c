@@ -48,47 +48,16 @@ int main() {
 
     // test_import_bdados_excel();
 
-    test_export_bdados_excel();
+//    test_export_bdados_excel();
 
 //    test_export_bdados_bin();
     // test_import_bdados_bin();
 
     //    test_memoria_bdados();
 
-    //     FILE *f = fopen("C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\BDados.dat", "rb");
-    //     int a;
-    //     fread(&a, sizeof(int), 1, f);
-    //
-    //     int b;
-    //     fread(&b, sizeof(int), 1, f);
-    //     char *z = (char *)malloc(sizeof(char) * 100);
-    //     fread(z, sizeof(char), b, f);
-    //
-    //     int c;
-    //     fread(&c, sizeof(int), 1, f);
-    //
-    //     int d;
-    //     fread(&d, sizeof(int), 1, f);
-    //     char *y = (char *)malloc(sizeof(char) * 100);
-    //     fread(y, sizeof(char), d, f);
-    //
-    //     int e;
-    //     fread(&e, sizeof(int), 1, f);
-    //     char *w = (char *)malloc(sizeof(char) * 100);
-    //     fread(w, sizeof(char), e, f);
-    //
-    //     int g;
-    //     fread(&g, sizeof(int), 1, f);
-    //     char *u = (char *)malloc(sizeof(char) * 100);
-    //     fread(u, sizeof(char), g, f);
-    //
-    //     int h;
-    //     fread(&h, sizeof(int), 1, f);
-    //     char *v = (char *)malloc(sizeof(char) * 100);
-    //     fread(v, sizeof(char), h, f);
-    //
-    //     int i;
-    //     fread(&i, sizeof(int), 1, f);
+//    test_select_large();
+
+    test_delete();
 
     return 0;
 }

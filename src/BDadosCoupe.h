@@ -14,6 +14,13 @@
 // Faz com que o Excel consiga ler os dados dos ficheiros exportados
 #define DEF_EXCEL_SEPARADOR "sep=;"
 
+#define DEBUG_TIMINGS
+#define FICHEIRO_DEBUG_TIMINGS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\timings.txt"
+
+#ifdef DEBUG_TIMINGS
+#include <time.h>
+#endif
+
 typedef struct {
     char NOME_BDADOS[MAX_NOME_BDADOS];
     char VERSAO_BDADOS[MAX_VERSAO_BDADOS];
@@ -115,5 +122,14 @@ void Destruir_Campo(void *info);
 void Escrever_Tabela_Excel(FILE *f, TABELA *T);
 
 int comparar_tabela(void *T1, void *T2);
+
+/**
+ * Retorna o primeiro campo que tenha o nome dado, e passa o seu indice pela variável indice
+ * @param T Tabela a procurar o campo
+ * @param nome_campo Nome do campo a procurar
+ * @param indice Ponteiro para o indice do campo
+ * @return Retorna o campo encontrado, ou NULL se não encontrar
+ */
+CAMPO *encontrar_indice_campo(TABELA *T, char *nome_campo, int *indice);
 
 #endif  // BDADOSCOUPE_H_INCLUDED

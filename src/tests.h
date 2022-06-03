@@ -17,6 +17,12 @@ void test_import_bdados_bin();
 
 void test_memoria_bdados();
 
+void test_select();
+
+void test_select_large();
+
+void test_delete();
+
 BDadosCoupe *bdados_base();
 
 #endif //TESTS_H_INCLUDED

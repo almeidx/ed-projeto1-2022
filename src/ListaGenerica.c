@@ -75,33 +75,6 @@ void *RemoveLG(ListaGenerica *lista, void *valor, int (*f_comparador)(void *, vo
     return NULL;
 }
 
-int RemoveTodosLG(ListaGenerica *lista, void *valor, int (*f_comparador)(void *, void *)) {
-    if (!lista) return 0;
-
-    NOG *atual = lista->Inicio, *ant = NULL;
-    int contador = 0;
-
-    while (atual) {
-        if (f_comparador(atual->Info, valor)) {
-            if (ant) {
-                ant->Prox = atual->Prox;
-            } else {
-                lista->Inicio = atual->Prox;
-            }
-            free(atual->Info);
-            free(atual);
-            lista->NEL--;
-            contador++;
-        } else {
-            ant = atual;
-        }
-
-        atual = atual->Prox;
-    }
-
-    return contador;
-}
-
 void MostrarLG(ListaGenerica *lista, void (*mostrar_info)(void *)) {
     if (!lista || !lista->NEL) return;
 
