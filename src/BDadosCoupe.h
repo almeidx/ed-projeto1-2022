@@ -10,28 +10,30 @@
 #define MAX_NOME_BDADOS 51
 #define MAX_VERSAO_BDADOS 51
 #define SEPARADOR_TABELA "------------------------------------------"
-#define EXCEL_SEPARADOR "sep=;"
+
+// Faz com que o Excel consiga ler os dados dos ficheiros exportados
+#define DEF_EXCEL_SEPARADOR "sep=;"
 
 typedef struct {
-  char NOME_BDADOS[MAX_NOME_BDADOS];
-  char VERSAO_BDADOS[MAX_VERSAO_BDADOS];
-  ListaGenerica *LTabelas;
+    char NOME_BDADOS[MAX_NOME_BDADOS];
+    char VERSAO_BDADOS[MAX_VERSAO_BDADOS];
+    ListaGenerica *LTabelas;
 } BDadosCoupe;
 
 #define MAX_NOME_TABELA 51
 
 typedef struct {
-  char NOME_TABELA[MAX_NOME_TABELA];
-  ListaGenerica *LCampos;
-  ListaGenerica *LRegistos;
+    char NOME_TABELA[MAX_NOME_TABELA];
+    ListaGenerica *LCampos;
+    ListaGenerica *LRegistos;
 } TABELA;
 
 #define MAX_NOME_CAMPO 51
 #define MAX_TIPO 11
 
 typedef struct {
-  char NOME_CAMPO[MAX_NOME_CAMPO];
-  char TIPO[MAX_TIPO];
+    char NOME_CAMPO[MAX_NOME_CAMPO];
+    char TIPO[MAX_TIPO];
 } CAMPO;
 
 #define REGISTO ListaGenerica
@@ -58,6 +60,7 @@ TABELA *Pesquisar_Tabela(BDadosCoupe *BD, char *nome_tabela);
 
 // G) Mostrar uma Tabela
 void Mostrar_Tabela_NOME(BDadosCoupe *BD, char *tabela);
+
 void Mostrar_Tabela(TABELA *T);
 
 // H) Mostrar toda a base de dados, deverá mostrar todas as Tabelas da BDados.
@@ -68,13 +71,18 @@ void Destruir_BDados(BDadosCoupe *BD);
 
 // J) Memória ocupada por toda a base de dados.
 long int Memoria_BDados(BDadosCoupe *BD);
+
 long int Memoria_Desperdicada_BDados(BDadosCoupe *BD);
 
 // K) Exportar/Importar para/de Ficheiro (o retorno destas funções, permite saber se a função foi bem/mal-executada!):
 int Exportar_Tabela_BDados_Excel(BDadosCoupe *BD, char *tabela, char *ficheiro_csv);
+
 int Exportar_BDados_Excel(BDadosCoupe *BD, char *ficheiro_csv);
+
 int Importar_BDados_Excel(BDadosCoupe *BD, char *ficheiro_csv);
+
 int Exportar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *ficheiro_dat);
+
 int Importar_BDados_Ficheiro_Binario(BDadosCoupe *BD, char *ficheiro_dat);
 
 // L) Apagar o conteúdo de uma Tabela. A Tabela continua a existir na BDados, mas não contém os dados, ou seja, os
@@ -98,6 +106,14 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *campo_comp, char *valor_campo_comp,
            char *nome_campo_update, char *valor_campo_update);
 
+void Destruir_Tabela(void *info);
+
 void Destruir_Registo(void *info);
+
+void Destruir_Campo(void *info);
+
+void Escrever_Tabela_Excel(FILE *f, TABELA *T);
+
+int comparar_tabela(void *T1, void *T2);
 
 #endif  // BDADOSCOUPE_H_INCLUDED

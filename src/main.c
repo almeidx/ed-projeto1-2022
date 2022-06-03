@@ -2,67 +2,97 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "BDadosCoupe.c"
-#include "tests.c"
+#include "BDadosCoupe.h"
+#include "tests.h"
 
 int condicao(char *, char *);
 
-/*
-  Uma Base de dados Relacional é formada por tabelas, onde cada tabela tem as várias colunas (campos) e os registos
-  (informação), um registo é uma coleção de dados. As tabelas podem ter relacionamentos entre elas (mas esta parte
-  será dada nas disciplinas de base de dados do 2ºano do curso).
-*/
 int main() {
-  // printf("Template do projecto BDadosCoupe para os alunos!\n");
+    // printf("Template do projecto BDadosCoupe para os alunos!\n");
 
-  // // printf("Memória em uso: %ld\n", Memoria_BDados(BD));
-  // // printf("Memória desperdiçada: %ld\n", Memoria_Desperdicada_BDados(BD));
+    // int n;
 
-  // // Exportar_Tabela_BDados_Excel(BD, nome_tabela, "BDados.csv");
+    // // clock_t begin = clock();
 
-  // int n;
+    // // n = SELECT(BD, "CLIENTES", condicao, "NOME", "Joana");
 
-  // // clock_t begin = clock();
+    // // clock_t end = clock();
+    // // double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  // // n = SELECT(BD, "CLIENTES", condicao, "NOME", "Joana");
+    // // printf("SELECT amount: %d\n", n);
+    // // printf("SELECT time spent: %f\n", time_spent);
 
-  // // clock_t end = clock();
-  // // double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    // // clock_t begin = clock();
 
-  // // printf("SELECT amount: %d\n", n);
-  // // printf("SELECT time spent: %f\n", time_spent);
+    // // n = DELETE(BD, "CLIENTES", condicao, "NOME", "Joana");
 
-  // // clock_t begin = clock();
+    // // clock_t end = clock();
+    // // double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
 
-  // // n = DELETE(BD, "CLIENTES", condicao, "NOME", "Joana");
+    // // printf("DELETE amount: %d\n", n);
+    // // printf("DELETE time spent: %f\n", time_spent);
 
-  // // clock_t end = clock();
-  // // double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    // UPDATE(BD, "CLIENTES", condicao, "NOME", "Joana", "CLIENTES", "Jaquim");
 
-  // // printf("DELETE amount: %d\n", n);
-  // // printf("DELETE time spent: %f\n", time_spent);
+    // // DELETE_TABLE_DATA(T);
 
-  // UPDATE(BD, "CLIENTES", condicao, "NOME", "Joana", "CLIENTES", "Jaquim");
+    // // DROP_TABLE(BD, nome_tabela);
 
-  // // DELETE_TABLE_DATA(T);
+    // // printf("Memória em uso depois de apagar: %ld\n", Memoria_BDados(BD));
 
-  // // DROP_TABLE(BD, nome_tabela);
+    // Destruir_BDados(BD);
 
-  // // printf("Memória em uso depois de apagar: %ld\n", Memoria_BDados(BD));
+    // test_import_regions_excel();
 
-  // Destruir_BDados(BD);
+    // test_import_vehicle_data_excel();
 
-  // test_import_regions_excel();
+    // test_import_bdados_excel();
 
-  // test_import_vehicle_data_excel();
+    test_export_bdados_excel();
 
-  // test_import_bdados_excel();
+//    test_export_bdados_bin();
+    // test_import_bdados_bin();
 
-  test_export_bdados_excel();
+    //    test_memoria_bdados();
 
-  return 0;
+    //     FILE *f = fopen("C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\BDados.dat", "rb");
+    //     int a;
+    //     fread(&a, sizeof(int), 1, f);
+    //
+    //     int b;
+    //     fread(&b, sizeof(int), 1, f);
+    //     char *z = (char *)malloc(sizeof(char) * 100);
+    //     fread(z, sizeof(char), b, f);
+    //
+    //     int c;
+    //     fread(&c, sizeof(int), 1, f);
+    //
+    //     int d;
+    //     fread(&d, sizeof(int), 1, f);
+    //     char *y = (char *)malloc(sizeof(char) * 100);
+    //     fread(y, sizeof(char), d, f);
+    //
+    //     int e;
+    //     fread(&e, sizeof(int), 1, f);
+    //     char *w = (char *)malloc(sizeof(char) * 100);
+    //     fread(w, sizeof(char), e, f);
+    //
+    //     int g;
+    //     fread(&g, sizeof(int), 1, f);
+    //     char *u = (char *)malloc(sizeof(char) * 100);
+    //     fread(u, sizeof(char), g, f);
+    //
+    //     int h;
+    //     fread(&h, sizeof(int), 1, f);
+    //     char *v = (char *)malloc(sizeof(char) * 100);
+    //     fread(v, sizeof(char), h, f);
+    //
+    //     int i;
+    //     fread(&i, sizeof(int), 1, f);
+
+    return 0;
 }
 
 int condicao(char *nome1, char *nome2) {
-  return strcmp(nome1, nome2) == 0;
+    return strcmp(nome1, nome2) == 0;
 }

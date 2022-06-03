@@ -1,6 +1,9 @@
+.idea
+cmake-build-debug
+
 *.exe
 *.dat
-words2.txt
 tempCodeRunnerFile*
+
 main
 !main.c
