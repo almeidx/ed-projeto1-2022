@@ -23,6 +23,12 @@ void test_select_large();
 
 void test_delete();
 
+void test_delete_large();
+
 BDadosCoupe *bdados_base();
+
+BDadosCoupe *bdados_base_large();
+
+int f_comparacao(char *a, char *b);
 
 #endif //TESTS_H_INCLUDED

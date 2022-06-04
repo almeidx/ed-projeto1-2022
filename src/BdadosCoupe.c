@@ -816,42 +816,36 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     CAMPO *C = encontrar_indice_campo(T, nome_campo, &i);
     if (!C) return INSUCESSO;
 
-    NOG *registo = T->LRegistos->Inicio, *registo_anterior = NULL;
+    NOG *registo = T->LRegistos->Inicio;
     while (registo) {
-        REGISTO *R = registo->Info;
+        REGISTO *R = (REGISTO *) registo->Info;
 
-        int j = 0;
-        NOG *atual = R->Inicio;
-        while (atual && j <= i) { // Percorrer todos os campos do registo até encontrar o do campo desejado
-            if (i == j) { // Comparar apenas se o campo for o que se pretende comparar
-                if (f_condicao((char *) atual->Info, valor_comparacao)) {
+        NOG *registo_atual = R->Inicio;
+        for (int j = 0; j <= i; j++) {
+            if (j == i) {
+                if (f_condicao((char *) registo_atual->Info, valor_comparacao)) {
                     para_remover = 1;
                 }
+
                 break;
             }
-            atual = atual->Prox;
+
+            registo_atual = registo_atual->Prox;
         }
 
         if (para_remover) {
-            NOG *aux = registo;
-            registo = registo->Prox;
+            NOG *prox = registo->Prox;
 
-            if (registo_anterior) {
-                registo_anterior->Prox = registo;
-            } else {
-                T->LRegistos->Inicio = registo;
-            }
-
-            // TODO: Causes segfault:
-//            DestruirLG((REGISTO *)aux->Info, Destruir_Registo);
-//            free(aux);
+            RemoveLG(T->LRegistos, registo->Info, comparar_registos);
 
             contador++;
             para_remover = 0;
-        } else {
-            registo = registo->Prox;
-            registo_anterior = registo;
+            registo = prox;
+
+            continue;
         }
+
+        registo = registo->Prox;
     }
 
 #ifdef DEBUG_TIMINGS
@@ -927,4 +921,21 @@ CAMPO *encontrar_indice_campo(TABELA *T, char *nome_campo, int *indice) {
         campo = campo->Prox;
     }
     return NULL;
+}
+
+// Função auxiliar utilizada na função DELETE
+int comparar_registos(void *reg1, void *reg2) {
+    if (!reg1 || !reg2) return 0;
+
+    REGISTO *R1 = (REGISTO *) reg1, *R2 = (REGISTO *) reg2;
+    if (R1->NEL != R2->NEL) return 0;
+
+    NOG *registo_atual = R1->Inicio, *registo_atual2 = R2->Inicio;
+    while (registo_atual) {
+        if (strcmp((char *) registo_atual->Info, (char *) registo_atual2->Info) != 0) return 0;
+        registo_atual = registo_atual->Prox;
+        registo_atual2 = registo_atual2->Prox;
+    }
+
+    return 1;
 }

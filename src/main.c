@@ -57,7 +57,9 @@ int main() {
 
 //    test_select_large();
 
-    test_delete();
+//    test_delete();
+
+    test_delete_large();
 
     return 0;
 }

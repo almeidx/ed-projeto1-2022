@@ -119,8 +119,19 @@ void Destruir_Registo(void *info);
 
 void Destruir_Campo(void *info);
 
+/**
+ * Escreve os dados de uma tabela num ficheiro csv
+ * @param f O ficheiro onde a tabela vai ser exportada
+ * @param T A tabela que vai ser exportada
+ */
 void Escrever_Tabela_Excel(FILE *f, TABELA *T);
 
+/**
+ * Compara duas tabelas
+ * @param T1 A primeira tabela a comparar
+ * @param T2 A segunda tabela a comparar
+ * @return 1 se as tabelas forem iguais, 0 se forem diferentes
+ */
 int comparar_tabela(void *T1, void *T2);
 
 /**
@@ -131,5 +142,13 @@ int comparar_tabela(void *T1, void *T2);
  * @return Retorna o campo encontrado, ou NULL se não encontrar
  */
 CAMPO *encontrar_indice_campo(TABELA *T, char *nome_campo, int *indice);
+
+/**
+ * Compara dois registos
+ * @param reg1 O primeiro registo a comparar
+ * @param reg2 O segundo registo a comparar
+ * @return 1 se os registos forem iguais, 0 se forem diferentes
+ */
+int comparar_registos(void *reg1, void *reg2);
 
 #endif  // BDADOSCOUPE_H_INCLUDED

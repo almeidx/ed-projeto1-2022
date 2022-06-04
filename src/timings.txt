@@ -1,12 +1,4 @@
 SELECT (tabela: VEICULOS, campo: TIMESTAMP, valor: "1592589883", qnt: 9): 0.027000
 SELECT (tabela: VEICULOS, campo: TIPO_VEICULO, valor: "cars", qnt: 7599): 18.036000
-DELETE (tabela: PESSOAS, campo: ID, valor: 24, qnt: 1): 0.000000
-DELETE (tabela: PESSOAS, campo: NOME, valor: Joao, qnt: 0): 0.000000
-DELETE (tabela: PESSOAS, campo: ID, valor: 24, qnt: 1): 58.976000
-DELETE (tabela: PESSOAS, campo: ID, valor: 24, qnt: 1): 0.000000
-DELETE (tabela: PESSOAS, campo: ID, valor: 24, qnt: 1): 0.000000
-DELETE (tabela: PESSOAS, campo: ID, valor: 24, qnt: 1): 0.000000
-DELETE (tabela: PESSOAS, campo: ID, valor: 24, qnt: 1): 0.000000
-DELETE (tabela: PESSOAS, campo: NOME, valor: Joao, qnt: 0): 0.000000
-DELETE (tabela: PESSOAS, campo: ID, valor: 24, qnt: 1): 0.000000
-DELETE (tabela: PESSOAS, campo: NOME, valor: Joao, qnt: 0): 0.000000
+DELETE (tabela: VEICULOS, campo: TIMESTAMP, valor: "1592589883", qnt: 9): 0.003000
+DELETE (tabela: VEICULOS, campo: TIPO_VEICULO, valor: "cars", qnt: 7596): 0.834000

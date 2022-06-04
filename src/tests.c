@@ -4,6 +4,8 @@
 // TODO
 #define FICHEIRO_BDADOS_EXCEL "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\BDados.csv"
 #define FICHEIRO_BDADOS_BIN "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\BDados.csv"
+#define FICHEIRO_BDADOS_VEICULOS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\Vehicle_Data.csv"
+#define FICHEIRO_BDADOS_REGIONS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\Regions.csv"
 
 void test_import_regions_excel() {
     BDadosCoupe *BD = Criar_BDados("BDadosCoupe", "1.0");
@@ -14,7 +16,7 @@ void test_import_regions_excel() {
     Add_Campo_Tabela(T, "ID_REGION", "INT");
     Add_Campo_Tabela(T, "NAME_REGION", "STRING");
 
-    Importar_BDados_Excel(BD, "Regions.csv");
+    Importar_BDados_Excel(BD, FICHEIRO_BDADOS_REGIONS);
 
     Mostrar_BDados(BD);
 
@@ -33,7 +35,7 @@ void test_import_vehicle_data_excel() {
     Add_Campo_Tabela(T, "TIMESTAMP", "STRING");
     Add_Campo_Tabela(T, "DATA", "STRING");
 
-    Importar_BDados_Excel(BD, "Vehicle_Data.csv");
+    Importar_BDados_Excel(BD, FICHEIRO_BDADOS_VEICULOS);
 
     Mostrar_BDados(BD);
 
@@ -42,8 +44,6 @@ void test_import_vehicle_data_excel() {
 
 void test_import_bdados_excel() {
     BDadosCoupe *BD = bdados_base();
-
-    Importar_BDados_Excel(BD, "BDados.csv");
 
     Mostrar_BDados(BD);
 
@@ -86,12 +86,9 @@ void test_export_bdados_excel() {
 void test_export_bdados_bin() {
     BDadosCoupe *BD = bdados_base();
 
-    Importar_BDados_Excel(BD, FICHEIRO_BDADOS_EXCEL);
-
     Mostrar_BDados(BD);
 
-    Exportar_BDados_Ficheiro_Binario(BD,
-                                     FICHEIRO_BDADOS_BIN);
+    Exportar_BDados_Ficheiro_Binario(BD, FICHEIRO_BDADOS_BIN);
 
     Destruir_BDados(BD);
 }
@@ -99,8 +96,7 @@ void test_export_bdados_bin() {
 void test_import_bdados_bin() {
     BDadosCoupe *BD = Criar_BDados("BD-Banco", "1.0");
 
-    Importar_BDados_Ficheiro_Binario(BD,
-                                     FICHEIRO_BDADOS_BIN);
+    Importar_BDados_Ficheiro_Binario(BD, FICHEIRO_BDADOS_BIN);
 
     Mostrar_BDados(BD);
 
@@ -109,7 +105,6 @@ void test_import_bdados_bin() {
 
 void test_memoria_bdados() {
     BDadosCoupe *BD = bdados_base();
-    Importar_BDados_Excel(BD, FICHEIRO_BDADOS_EXCEL);
 
     printf("Memoria em uso: %ld\n", Memoria_BDados(BD));
     printf("Memoria desperdicada: %ld\n", Memoria_Desperdicada_BDados(BD));
@@ -117,13 +112,8 @@ void test_memoria_bdados() {
     Destruir_BDados(BD);
 }
 
-int f_comparacao(char *a, char *b) {
-    return strcmp(a, b) == 0;
-}
-
 void test_select() {
     BDadosCoupe *BD = bdados_base();
-    Importar_BDados_Excel(BD, FICHEIRO_BDADOS_EXCEL);
 
     Mostrar_BDados(BD);
 
@@ -134,17 +124,7 @@ void test_select() {
 }
 
 void test_select_large() {
-    BDadosCoupe *BD = Criar_BDados("BDadosCoupe", "1.0");
-
-    // ID_REGION;TIPO_VEICULO;NUMERO;TIMESTAMP;DATA
-    TABELA *T = Criar_Tabela(BD, "VEICULOS");
-    Add_Campo_Tabela(T, "ID_REGION", "INT");
-    Add_Campo_Tabela(T, "TIPO_VEICULO", "STRING");
-    Add_Campo_Tabela(T, "NUMERO", "INT");
-    Add_Campo_Tabela(T, "TIMESTAMP", "INT");
-    Add_Campo_Tabela(T, "DATA", "STRING");
-
-    Importar_BDados_Excel(BD, "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\Vehicle_Data.csv");
+    BDadosCoupe *BD = bdados_base_large();
 
 //    Mostrar_BDados(BD);
 
@@ -156,7 +136,6 @@ void test_select_large() {
 
 void test_delete() {
     BDadosCoupe *BD = bdados_base();
-    Importar_BDados_Excel(BD, FICHEIRO_BDADOS_EXCEL);
 
     Mostrar_BDados(BD);
 
@@ -164,6 +143,18 @@ void test_delete() {
     printf("DELETE FROM \"PESSOAS\" WHERE \"NOME\" = \"Joao\" amount: %d\n", DELETE(BD, "PESSOAS", f_comparacao, "NOME", "Joao"));
 
     Mostrar_BDados(BD);
+
+    Destruir_BDados(BD);
+}
+
+void test_delete_large() {
+    BDadosCoupe *BD = bdados_base_large();
+//    Mostrar_BDados(BD);
+
+    printf("DELETE FROM \"VEICULOS\" WHERE \"TIMESTAMP\" = \"1592589883\" amount: %d\n", DELETE(BD, "VEICULOS", f_comparacao, "TIMESTAMP", "\"1592589883\""));
+    printf("DELETE FROM \"VEICULOS\" WHERE \"TIPO_VEICULO\" = \"\"cars\"\" amount: %d\n", DELETE(BD, "VEICULOS", f_comparacao, "TIPO_VEICULO", "\"cars\""));
+
+//    Mostrar_BDados(BD);
 
     Destruir_BDados(BD);
 }
@@ -181,5 +172,27 @@ BDadosCoupe *bdados_base() {
     Add_Campo_Tabela(T2, "ID", "INT");
     Add_Campo_Tabela(T2, "REGION", "STRING");
 
+    Importar_BDados_Excel(BD, FICHEIRO_BDADOS_EXCEL);
+
     return BD;
+}
+
+BDadosCoupe *bdados_base_large() {
+    BDadosCoupe *BD = Criar_BDados("BDadosCoupe", "1.0");
+
+    // ID_REGION;TIPO_VEICULO;NUMERO;TIMESTAMP;DATA
+    TABELA *T = Criar_Tabela(BD, "VEICULOS");
+    Add_Campo_Tabela(T, "ID_REGION", "INT");
+    Add_Campo_Tabela(T, "TIPO_VEICULO", "STRING");
+    Add_Campo_Tabela(T, "NUMERO", "INT");
+    Add_Campo_Tabela(T, "TIMESTAMP", "INT");
+    Add_Campo_Tabela(T, "DATA", "STRING");
+
+    Importar_BDados_Excel(BD, FICHEIRO_BDADOS_VEICULOS);
+
+    return BD;
+}
+
+int f_comparacao(char *a, char *b) {
+    return strcmp(a, b) == 0;
 }
