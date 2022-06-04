@@ -18,7 +18,9 @@
 #define FICHEIRO_DEBUG_TIMINGS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\timings.txt"
 
 #ifdef DEBUG_TIMINGS
+
 #include <time.h>
+
 #endif
 
 typedef struct {

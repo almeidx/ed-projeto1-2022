@@ -748,12 +748,11 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     while (registo) {
         REGISTO *R = (REGISTO *) registo->Info;
 
-        int j = 0;
         NOG *registo_atual = R->Inicio;
-        while (registo_atual && j <= i) { // Percorrer todos os campos do registo até encontrar o do campo desejado
+        for (int j = 0; j <= i; j++) {
             if (j == i) { // Comparar apenas se o campo for o que se pretende comparar
-                if (f_condicao((char *) registo_atual->Info,
-                               valor_comparacao)) { // Registo foi encontrado, apresentar no ecrã
+                if (f_condicao((char *) registo_atual->Info, valor_comparacao)) {
+                    // Registo foi encontrado, apresentar no ecrã
                     printf("[%s]: ", __FUNCTION__);
 
                     int k = 0;
@@ -775,7 +774,6 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
                 break;
             }
 
-            j++;
             registo_atual = registo_atual->Prox;
         }
 
@@ -812,7 +810,7 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
     if (!T) return INSUCESSO;
 
-    int i, contador = 0, para_remover = 0;
+    int i, contador = 0, linha_removida = 0;
     CAMPO *C = encontrar_indice_campo(T, nome_campo, &i);
     if (!C) return INSUCESSO;
 
@@ -824,7 +822,13 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
         for (int j = 0; j <= i; j++) {
             if (j == i) {
                 if (f_condicao((char *) registo_atual->Info, valor_comparacao)) {
-                    para_remover = 1;
+                    NOG *prox = registo->Prox;
+
+                    RemoveLG(T->LRegistos, registo->Info, comparar_registos);
+
+                    contador++;
+                    registo = prox;
+                    linha_removida = 1;
                 }
 
                 break;
@@ -833,15 +837,8 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
             registo_atual = registo_atual->Prox;
         }
 
-        if (para_remover) {
-            NOG *prox = registo->Prox;
-
-            RemoveLG(T->LRegistos, registo->Info, comparar_registos);
-
-            contador++;
-            para_remover = 0;
-            registo = prox;
-
+        if (linha_removida) {
+            linha_removida = 0;
             continue;
         }
 
@@ -870,38 +867,76 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), char *campo_comp, char *valor_campo_comp,
            char *nome_campo_update, char *valor_campo_update) {
     if (!BD || !_tabela || !f_condicao || !campo_comp || !valor_campo_comp || !nome_campo_update ||
-        !valor_campo_update) {
+        !valor_campo_update)
         return INSUCESSO;
-    }
+
+#ifdef DEBUG_TIMINGS
+    clock_t start = clock();
+#endif
 
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
     if (!T) return INSUCESSO;
 
-    long len = strlen(valor_campo_update) + 1;
+    int i_comp, i_update, contador = 0;
+    CAMPO *C_comp = encontrar_indice_campo(T, campo_comp, &i_comp),
+            *C_update = encontrar_indice_campo(T, nome_campo_update, &i_update);
+    if (!C_comp || !C_update) return INSUCESSO;
+
+    size_t campo_update_len = sizeof(char) * (strlen(valor_campo_update) + 1);
+
     NOG *registo = T->LRegistos->Inicio;
-    int contador = 0;
-
     while (registo) {
-        REGISTO *R = registo->Info;
+        REGISTO *R = (REGISTO *) registo->Info;
 
-        NOG *atual = R->Inicio, *ant = NULL;
+        NOG *registo_atual = R->Inicio;
+        for (int j = 0; j <= i_comp; j++) {
+            if (j == i_comp) { // Se for o campo de comparação
+                // E se o valor do campo de comparação for igual ao valor de comparação
+                if (f_condicao((char *) registo_atual->Info, valor_campo_comp)) {
+                    NOG *registo_atual_update = R->Inicio;
+                    for (int k = 0; k <= i_update; k++) {
+                        if (k == i_update) { // Se for o campo de update, atualiza o valor
+                            // Apenas atualizar o valor se for diferente
+                            if (strcmp((char *) registo_atual_update->Info, valor_campo_update) != 0) {
+                                free(registo_atual_update->Info);
+                                registo_atual_update->Info = (char *) malloc(campo_update_len);
+                                strcpy((char *) registo_atual_update->Info, valor_campo_update);
+                                contador++;
+                            }
 
-        while (atual) {
-            if (f_condicao(atual->Info, valor_campo_comp)) {
-                free(atual->Info);
+                            break;
+                        }
 
-                atual->Info = (char *) malloc(sizeof(char) * len);
-                strcpy(atual->Info, valor_campo_update);
+                        registo_atual_update = registo_atual_update->Prox;
+                    }
+                }
 
-                contador++;
-            } else {
-                ant = atual;
-                atual = atual->Prox;
+                break;
             }
+
+            registo_atual = registo_atual->Prox;
         }
 
         registo = registo->Prox;
     }
+
+#ifdef DEBUG_TIMINGS
+    clock_t end = clock();
+
+    FILE *f = fopen(FICHEIRO_DEBUG_TIMINGS, "a");
+    if (f) {
+        fprintf(f, "%s (tabela: %s, campo comp: %s, valor comp: %s, campo update: %s, valor novo: %s, qnt: %d): %f\n",
+                __FUNCTION__, _tabela,
+                campo_comp,
+                valor_campo_comp,
+                nome_campo_update,
+                valor_campo_update,
+                contador,
+                (double) (end - start) / CLOCKS_PER_SEC);
+
+        fclose(f);
+    }
+#endif
 
     return contador;
 }

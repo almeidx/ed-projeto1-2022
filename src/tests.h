@@ -25,6 +25,10 @@ void test_delete();
 
 void test_delete_large();
 
+void test_update();
+
+void test_update_large();
+
 BDadosCoupe *bdados_base();
 
 BDadosCoupe *bdados_base_large();

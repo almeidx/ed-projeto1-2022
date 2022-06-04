@@ -117,8 +117,10 @@ void test_select() {
 
     Mostrar_BDados(BD);
 
-    printf("SELECT FROM \"PESSOAS\" WHERE \"ID\" = \"24\" amount: %d\n", SELECT(BD, "PESSOAS", f_comparacao, "ID", "24"));
-    printf("SELECT FROM \"PESSOAS\" WHERE \"NOME\" = \"Joao\" amount: %d\n", SELECT(BD, "PESSOAS", f_comparacao, "NOME", "Joao"));
+    printf("SELECT FROM \"PESSOAS\" WHERE \"ID\" = \"24\" amount: %d\n",
+           SELECT(BD, "PESSOAS", f_comparacao, "ID", "24"));
+    printf("SELECT FROM \"PESSOAS\" WHERE \"NOME\" = \"Joao\" amount: %d\n",
+           SELECT(BD, "PESSOAS", f_comparacao, "NOME", "Joao"));
 
     Destruir_BDados(BD);
 }
@@ -128,8 +130,10 @@ void test_select_large() {
 
 //    Mostrar_BDados(BD);
 
-    printf("SELECT FROM \"VEICULOS\" WHERE \"TIMESTAMP\" = \"\"1592589883\"\" amount: %d\n", SELECT(BD, "VEICULOS", f_comparacao, "TIMESTAMP", "\"1592589883\""));
-    printf("SELECT FROM \"VEICULOS\" WHERE \"TIPO_VEICULO\" = \"\"cars\"\" amount: %d\n", SELECT(BD, "VEICULOS", f_comparacao, "TIPO_VEICULO", "\"cars\""));
+    printf("SELECT FROM \"VEICULOS\" WHERE \"TIMESTAMP\" = \"\"1592589883\"\" amount: %d\n",
+           SELECT(BD, "VEICULOS", f_comparacao, "TIMESTAMP", "\"1592589883\""));
+    printf("SELECT FROM \"VEICULOS\" WHERE \"TIPO_VEICULO\" = \"\"cars\"\" amount: %d\n",
+           SELECT(BD, "VEICULOS", f_comparacao, "TIPO_VEICULO", "\"cars\""));
 
     Destruir_BDados(BD);
 }
@@ -139,8 +143,10 @@ void test_delete() {
 
     Mostrar_BDados(BD);
 
-    printf("DELETE FROM \"PESSOAS\" WHERE \"ID\" = \"24\" amount: %d\n", DELETE(BD, "PESSOAS", f_comparacao, "ID", "24"));
-    printf("DELETE FROM \"PESSOAS\" WHERE \"NOME\" = \"Joao\" amount: %d\n", DELETE(BD, "PESSOAS", f_comparacao, "NOME", "Joao"));
+    printf("DELETE FROM \"PESSOAS\" WHERE \"ID\" = \"24\" amount: %d\n",
+           DELETE(BD, "PESSOAS", f_comparacao, "ID", "24"));
+    printf("DELETE FROM \"PESSOAS\" WHERE \"NOME\" = \"Joao\" amount: %d\n",
+           DELETE(BD, "PESSOAS", f_comparacao, "NOME", "Joao"));
 
     Mostrar_BDados(BD);
 
@@ -151,8 +157,39 @@ void test_delete_large() {
     BDadosCoupe *BD = bdados_base_large();
 //    Mostrar_BDados(BD);
 
-    printf("DELETE FROM \"VEICULOS\" WHERE \"TIMESTAMP\" = \"1592589883\" amount: %d\n", DELETE(BD, "VEICULOS", f_comparacao, "TIMESTAMP", "\"1592589883\""));
-    printf("DELETE FROM \"VEICULOS\" WHERE \"TIPO_VEICULO\" = \"\"cars\"\" amount: %d\n", DELETE(BD, "VEICULOS", f_comparacao, "TIPO_VEICULO", "\"cars\""));
+    printf("DELETE FROM \"VEICULOS\" WHERE \"TIMESTAMP\" = \"1592589883\" amount: %d\n",
+           DELETE(BD, "VEICULOS", f_comparacao, "TIMESTAMP", "\"1592589883\""));
+    printf("DELETE FROM \"VEICULOS\" WHERE \"TIPO_VEICULO\" = \"\"cars\"\" amount: %d\n",
+           DELETE(BD, "VEICULOS", f_comparacao, "TIPO_VEICULO", "\"cars\""));
+
+//    Mostrar_BDados(BD);
+
+    Destruir_BDados(BD);
+}
+
+void test_update() {
+    BDadosCoupe *BD = bdados_base();
+
+    Mostrar_BDados(BD);
+
+    printf("UPDATE \"PESSOAS\" SET \"NOME\" = \"Joao\" WHERE \"ID\" = \"24\" amount: %d\n",
+           UPDATE(BD, "PESSOAS", f_comparacao, "ID", "24", "NOME", "Joao"));
+    printf("UPDATE \"PESSOAS\" SET \"NOME\" = \"Bomdia\" WHERE \"NOME\" = \"Joao\" amount: %d\n",
+           UPDATE(BD, "PESSOAS", f_comparacao, "NOME", "Joao", "NOME", "Bomdia"));
+
+    Mostrar_BDados(BD);
+
+    Destruir_BDados(BD);
+}
+
+void test_update_large() {
+    BDadosCoupe *BD = bdados_base_large();
+//    Mostrar_BDados(BD);
+
+    printf("UPDATE \"VEICULOS\" SET \"TIPO_VEICULO\" = \"\"cars\"\" WHERE \"TIMESTAMP\" = \"1592589883\" amount: %d\n",
+           UPDATE(BD, "VEICULOS", f_comparacao, "TIMESTAMP", "\"1592589883\"", "TIPO_VEICULO", "\"cars\""));
+    printf("UPDATE \"VEICULOS\" SET \"TIPO_VEICULO\" = \"\"cars\"\" WHERE \"TIPO_VEICULO\" = \"\"bikes\"\" amount: %d\n",
+           UPDATE(BD, "VEICULOS", f_comparacao, "TIPO_VEICULO", "\"cars\"", "TIPO_VEICULO", "\"bikes\""));
 
 //    Mostrar_BDados(BD);
 

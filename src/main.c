@@ -51,15 +51,18 @@ int main() {
 //    test_export_bdados_excel();
 
 //    test_export_bdados_bin();
-    // test_import_bdados_bin();
+//    test_import_bdados_bin();
 
-    //    test_memoria_bdados();
+//    test_memoria_bdados();
 
-//    test_select_large();
+//    test_select();
+    test_select_large();
 
 //    test_delete();
+//    test_delete_large();
 
-    test_delete_large();
+//    test_update();
+//    test_update_large();
 
     return 0;
 }
