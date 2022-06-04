@@ -1,11 +1,10 @@
 #include "tests.h"
 #include "BDadosCoupe.h"
 
-// TODO
-#define FICHEIRO_BDADOS_EXCEL "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\BDados.csv"
-#define FICHEIRO_BDADOS_BIN "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\BDados.csv"
-#define FICHEIRO_BDADOS_VEICULOS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\Vehicle_Data.csv"
-#define FICHEIRO_BDADOS_REGIONS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\src\\Regions.csv"
+#define FICHEIRO_BDADOS_EXCEL "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\BDados.csv"
+#define FICHEIRO_BDADOS_BIN "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\BDados.csv"
+#define FICHEIRO_BDADOS_VEICULOS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\Vehicle_Data.csv"
+#define FICHEIRO_BDADOS_REGIONS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\Regions.csv"
 
 void test_import_regions_excel() {
     BDadosCoupe *BD = Criar_BDados("BDadosCoupe", "1.0");
@@ -195,6 +194,32 @@ void test_update_large() {
 
     Destruir_BDados(BD);
 }
+
+void test_delete_table_data() {
+    BDadosCoupe *BD = bdados_base();
+
+    Mostrar_BDados(BD);
+
+    TABELA *T = Pesquisar_Tabela(BD, "PESSOAS");
+    DELETE_TABLE_DATA(T);
+
+    Mostrar_BDados(BD);
+
+    Destruir_BDados(BD);
+}
+
+void test_drop_table() {
+    BDadosCoupe *BD = bdados_base();
+
+    Mostrar_BDados(BD);
+
+    DROP_TABLE(BD, "PESSOAS");
+
+    Mostrar_BDados(BD);
+
+    Destruir_BDados(BD);
+}
+
 
 BDadosCoupe *bdados_base() {
     BDadosCoupe *BD = Criar_BDados("BDadosCoupe", "1.0");

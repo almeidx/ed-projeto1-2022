@@ -6,7 +6,7 @@ set(CMAKE_C_STANDARD 11)
 include_directories(src)
 
 add_executable(ed_projeto1_2022
-        src/BDadosCoupe.c
-        src/ListaGenerica.c
-        src/main.c
-        src/tests.c src/tests.h)
+        BDadosCoupe.c
+        ListaGenerica.c
+        main.c
+        tests.c tests.h)

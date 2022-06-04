@@ -184,60 +184,35 @@ void Mostrar_Tabela_NOME(BDadosCoupe *BD, char *tabela) {
     Mostrar_Tabela(T);
 }
 
-void Mostrar_Lista_Campos(TABELA *T) {
-    if (!T) return;
+void Mostrar_Campo(void *campo) {
+    if (!campo) return;
 
-    NOG *campo = T->LCampos->Inicio;
-
-    int i = 0;
-    while (campo) {
-        CAMPO *C = (CAMPO *) campo->Info;
-        if (i == 0) {  // No primeiro campo, incluir tabs no início para ficar mais organizado
-            printf("\t\t\t%s (%s)", C->NOME_CAMPO, C->TIPO);
-            i++;
-        } else {  // Nas iterações seguintes, incluir uma barra para separar os campos
-            printf(" | %s (%s)", C->NOME_CAMPO, C->TIPO);
-        }
-        campo = campo->Prox;
-    }
-
-    // Só incluir uma nova linha no fim se houver campos
-    if (T->LCampos->NEL) printf("\n");
+    CAMPO *C = (CAMPO *) campo;
+    printf("\n\t\t%s (%s)", C->NOME_CAMPO, C->TIPO);
 }
 
-void Mostrar_Lista_Registos(TABELA *T) {
-    if (!T) return;
+void Mostrar_Registo(void *registo) {
+    if (!registo) return;
 
-    NOG *registo = T->LRegistos->Inicio;
-    while (registo) {
-        REGISTO *R = (REGISTO *) registo->Info;
-        int i = 0;
-        NOG *registo_atual = R->Inicio;
-        while (registo_atual) {
-            if (i == 0) {  // No primeiro registo, incluir tabs no início para ficar mais organizado
-                printf("\t\t\t%s", (char *) registo_atual->Info);
-                i++;
-            } else {  // Nas iterações seguintes, incluir uma barra para separar os campos
-                printf(" | %s", (char *) registo_atual->Info);
-            }
-            registo_atual = registo_atual->Prox;
-        }
-        printf("\n");
-
-        registo = registo->Prox;
+    printf("\t");
+    NOG *registo_atual = ((REGISTO *) registo)->Inicio;
+    while (registo_atual) {
+        printf("\t%s\t", (char *) registo_atual->Info);
+        registo_atual = registo_atual->Prox;
     }
+    printf("\n");
 }
 
 void Mostrar_Tabela(TABELA *T) {
     if (!T) return;
 
-    printf("\t----- TABELA -----\n");
-    printf("\t\tNome: %s\n", T->NOME_TABELA);
-    printf("\t\tCampos (%d):\n", T->LCampos->NEL);
-    Mostrar_Lista_Campos(T);
-    printf("\t\tRegistos (%d):\n", T->LRegistos->NEL);
-    Mostrar_Lista_Registos(T);
-    printf("\t------------------\n");
+    printf("----- TABELA -----\n");
+    printf("\tNome: %s\n", T->NOME_TABELA);
+    printf("\tCampos (%d):", T->LCampos->NEL);
+    MostrarLG(T->LCampos, Mostrar_Campo);
+    printf("\n\tRegistos (%d):\n", T->LRegistos->NEL);
+    MostrarLG(T->LRegistos, Mostrar_Registo);
+    printf("------------------\n");
 }
 
 // H)	Mostrar toda a base de dados, deverá mostrar todas as Tabelas da BDados.
@@ -781,17 +756,8 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     }
 
 #ifdef DEBUG_TIMINGS
-    clock_t end = clock();
-
-    FILE *f = fopen(FICHEIRO_DEBUG_TIMINGS, "a");
-    if (f) {
-        fprintf(f, "%s (tabela: %s, campo: %s, valor: %s, qnt: %d): %f\n", __FUNCTION__, _tabela, nome_campo,
-                valor_comparacao,
-                contador,
-                (double) (end - start) / CLOCKS_PER_SEC);
-
-        fclose(f);
-    }
+    WRITE_TIMING(start, "%s (tabela: %s, campo: %s, valor: %s, qnt: %d): %f\n", _tabela, nome_campo, valor_comparacao,
+                 contador);
 #endif
 
     return contador;
@@ -820,10 +786,11 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
 
         NOG *registo_atual = R->Inicio;
         for (int j = 0; j <= i; j++) {
-            if (j == i) {
+            if (j == i) { // Se for o campo pretendido, comparar o seu valor
                 if (f_condicao((char *) registo_atual->Info, valor_comparacao)) {
                     NOG *prox = registo->Prox;
 
+                    // Remover o registo inteiro da lista de registos
                     RemoveLG(T->LRegistos, registo->Info, comparar_registos);
 
                     contador++;
@@ -837,7 +804,7 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
             registo_atual = registo_atual->Prox;
         }
 
-        if (linha_removida) {
+        if (linha_removida) { // Para que não tente acessar o próximo registo novamente, pois já foi feito anteriormente
             linha_removida = 0;
             continue;
         }
@@ -846,17 +813,8 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     }
 
 #ifdef DEBUG_TIMINGS
-    clock_t end = clock();
-
-    FILE *f = fopen(FICHEIRO_DEBUG_TIMINGS, "a");
-    if (f) {
-        fprintf(f, "%s (tabela: %s, campo: %s, valor: %s, qnt: %d): %f\n", __FUNCTION__, _tabela, nome_campo,
-                valor_comparacao,
-                contador,
-                (double) (end - start) / CLOCKS_PER_SEC);
-
-        fclose(f);
-    }
+    WRITE_TIMING(start, "%s (tabela: %s, campo: %s, valor: %s, qnt: %d): %f\n", _tabela, nome_campo, valor_comparacao,
+                 contador);
 #endif
 
     return contador;
@@ -921,21 +879,14 @@ int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     }
 
 #ifdef DEBUG_TIMINGS
-    clock_t end = clock();
-
-    FILE *f = fopen(FICHEIRO_DEBUG_TIMINGS, "a");
-    if (f) {
-        fprintf(f, "%s (tabela: %s, campo comp: %s, valor comp: %s, campo update: %s, valor novo: %s, qnt: %d): %f\n",
-                __FUNCTION__, _tabela,
-                campo_comp,
-                valor_campo_comp,
-                nome_campo_update,
-                valor_campo_update,
-                contador,
-                (double) (end - start) / CLOCKS_PER_SEC);
-
-        fclose(f);
-    }
+    WRITE_TIMING(start,
+                 "%s (tabela: %s, campo comp: %s, valor comp: %s, campo update: %s, valor novo: %s, qnt: %d): %f\n",
+                 _tabela,
+                 campo_comp,
+                 valor_campo_comp,
+                 nome_campo_update,
+                 valor_campo_update,
+                 contador);
 #endif
 
     return contador;
