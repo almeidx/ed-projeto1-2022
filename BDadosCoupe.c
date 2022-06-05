@@ -236,8 +236,12 @@ void Destruir_Campo(void *info) {
     free(campo);
 }
 
-void Destruir_Registo(void *info) {
+void Destruir_Registo_Info(void *info) {
     free(info);
+}
+
+void Destruir_Registo(void *info) {
+    DestruirLG((REGISTO *) info, Destruir_Registo_Info);
 }
 
 void Destruir_Tabela(void *info) {
