@@ -9,4 +9,4 @@ add_executable(ed_projeto1_2022
         BDadosCoupe.c
         ListaGenerica.c
         main.c
-        tests.c tests.h)
+        tests.c)

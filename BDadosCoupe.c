@@ -764,8 +764,13 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     }
 
 #ifdef DEBUG_TIMINGS
-    WRITE_TIMING(start, "%s (tabela: %s, campo: %s, valor: %s, qnt: %d): %f\n", _tabela, nome_campo, valor_comparacao,
-                 contador);
+    FILE *f = fopen(FICHEIRO_DEBUG_TIMINGS, "a");
+    if (f) {
+        fprintf(f, "%s (tabela: %s, campo: %s, valor: %s, qnt: %d): %f\n", __FUNCTION__, _tabela, nome_campo,
+                valor_comparacao,
+                contador, (double) (clock() - start) / CLOCKS_PER_SEC);
+        fclose(f);
+    }
 #endif
 
     return contador;
@@ -822,8 +827,13 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     }
 
 #ifdef DEBUG_TIMINGS
-    WRITE_TIMING(start, "%s (tabela: %s, campo: %s, valor: %s, qnt: %d): %f\n", _tabela, nome_campo, valor_comparacao,
-                 contador);
+    FILE *f = fopen(FICHEIRO_DEBUG_TIMINGS, "a");
+    if (f) {
+        fprintf(f, "%s (tabela: %s, campo: %s, valor: %s, qnt: %d): %f\n", __FUNCTION__, _tabela, nome_campo,
+                valor_comparacao,
+                contador, (double) (clock() - start) / CLOCKS_PER_SEC);
+        fclose(f);
+    }
 #endif
 
     return contador;
@@ -844,8 +854,16 @@ int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
     if (!T) return INSUCESSO;
 
-    int i_comp = encontrar_indice_campo(T, campo_comp), i_update = encontrar_indice_campo(T, nome_campo_update), contador = 0;
-    if (i_comp == -1 || i_update == -1) return INSUCESSO;
+    int i_comp = encontrar_indice_campo(T, campo_comp), i_update, contador = 0;
+    if (i_comp == -1) return INSUCESSO;
+
+    // Apenas pesquisar o índice do campo de update se for diferente do campo de comparação, pois este já foi calculado
+    if (strcmp(campo_comp, nome_campo_update) == 0) {
+        i_update = i_comp;
+    } else {
+        i_update = encontrar_indice_campo(T, nome_campo_update);
+    }
+    if (i_update == -1) return INSUCESSO;
 
     size_t campo_update_len = sizeof(char) * (strlen(valor_campo_update) + 1);
 
@@ -886,14 +904,17 @@ int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     }
 
 #ifdef DEBUG_TIMINGS
-    WRITE_TIMING(start,
-                 "%s (tabela: %s, campo comp: %s, valor comp: %s, campo update: %s, valor novo: %s, qnt: %d): %f\n",
-                 _tabela,
-                 campo_comp,
-                 valor_campo_comp,
-                 nome_campo_update,
-                 valor_campo_update,
-                 contador);
+    FILE *f = fopen(FICHEIRO_DEBUG_TIMINGS, "a");
+    if (f) {
+        fprintf(f, "%s (tabela: %s, campo comp: %s, valor comp: %s, campo update: %s, valor novo: %s, qnt: %d): %f\n",
+                __FUNCTION__, _tabela,
+                campo_comp,
+                valor_campo_comp,
+                nome_campo_update,
+                valor_campo_update,
+                contador, (double) (clock() - start) / CLOCKS_PER_SEC);
+        fclose(f);
+    }
 #endif
 
     return contador;

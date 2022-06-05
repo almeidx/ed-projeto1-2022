@@ -2,8 +2,10 @@
 cmake-build-debug
 
 *.exe
-*.dat
 tempCodeRunnerFile*
 
 main
 !main.c
+
+*.pdf
+*.zip

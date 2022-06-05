@@ -16,16 +16,7 @@
 
 // Comentar esta linha para desativar o reporte de tempo de execução das funções SELECT, DELETE, UPDATE
 #define DEBUG_TIMINGS
-#define FICHEIRO_DEBUG_TIMINGS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\timings.txt"
-
-// Usamos uma "variadic macro" de modo a não repetir isto 3 vezes
-// https://en.wikipedia.org/wiki/Variadic_macro_in_the_C_preprocessor
-#define WRITE_TIMING(start, format, ...) clock_t end = clock(); \
-    FILE *f = fopen(FICHEIRO_DEBUG_TIMINGS, "a"); \
-    if (f) { \
-        fprintf(f, format, __FUNCTION__, __VA_ARGS__, (double) (end - start) / CLOCKS_PER_SEC); \
-        fclose(f); \
-    }
+#define FICHEIRO_DEBUG_TIMINGS "timings.txt"
 
 #ifdef DEBUG_TIMINGS
 

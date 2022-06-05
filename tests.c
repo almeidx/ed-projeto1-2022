@@ -1,10 +1,10 @@
 #include "tests.h"
 #include "BDadosCoupe.h"
 
-#define FICHEIRO_BDADOS_EXCEL "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\BDados.csv"
-#define FICHEIRO_BDADOS_BIN "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\BDados.csv"
-#define FICHEIRO_BDADOS_VEICULOS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\Vehicle_Data.csv"
-#define FICHEIRO_BDADOS_REGIONS "C:\\Users\\Utilizador\\OneDrive - ESTGV\\ED\\ed-projeto1-2022\\Regions.csv"
+#define FICHEIRO_BDADOS_EXCEL "BDados.csv"
+#define FICHEIRO_BDADOS_BIN "BDados.dat"
+#define FICHEIRO_BDADOS_VEICULOS "Vehicle_Data.csv"
+#define FICHEIRO_BDADOS_REGIONS "Regions.csv"
 
 void test_import_regions_excel() {
     BDadosCoupe *BD = Criar_BDados("BDadosCoupe", "1.0");
@@ -62,7 +62,7 @@ void test_export_bdados_excel() {
 
     Add_Valores_Tabela_BDados(BD, nome_tabela, "25;Tone");
     Add_Valores_Tabela_BDados(BD, nome_tabela, "26;Joana");
-    Add_Valores_Tabela_BDados(BD, nome_tabela, "26666666666666666666666666666;Joana");
+    Add_Valores_Tabela_BDados(BD, nome_tabela, "266;Joana");
     Add_Valores_Tabela_BDados(BD, nome_tabela, "333;Joao");
     Add_Valores_Tabela_BDados(BD, nome_tabela, "3334;Joao");
 

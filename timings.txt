@@ -1,6 +1,6 @@
-SELECT (tabela: VEICULOS, campo: TIMESTAMP, valor: "1592589883", qnt: 9): 0.019000
-SELECT (tabela: VEICULOS, campo: TIPO_VEICULO, valor: "cars", qnt: 7599): 15.205000
-DELETE (tabela: VEICULOS, campo: TIMESTAMP, valor: "1592589883", qnt: 9): 0.005000
-DELETE (tabela: VEICULOS, campo: TIPO_VEICULO, valor: "cars", qnt: 7596): 0.771000
+SELECT (tabela: VEICULOS, campo: TIMESTAMP, valor: "1592589883", qnt: 9): 0.017000
+SELECT (tabela: VEICULOS, campo: TIPO_VEICULO, valor: "cars", qnt: 7599): 13.868000
+DELETE (tabela: VEICULOS, campo: TIMESTAMP, valor: "1592589883", qnt: 9): 0.003000
+DELETE (tabela: VEICULOS, campo: TIPO_VEICULO, valor: "cars", qnt: 7596): 0.746000
 UPDATE (tabela: VEICULOS, campo comp: TIMESTAMP, valor comp: "1592589883", campo update: TIPO_VEICULO, valor novo: "cars", qnt: 6): 0.001000
 UPDATE (tabela: VEICULOS, campo comp: TIPO_VEICULO, valor comp: "cars", campo update: TIPO_VEICULO, valor novo: "bikes", qnt: 7605): 0.002000
