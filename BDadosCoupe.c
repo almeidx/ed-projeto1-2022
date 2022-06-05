@@ -317,10 +317,10 @@ long int Memoria_BDados(BDadosCoupe *BD) {
  * Memória desperdiçada por cada tabela:
  *  — no nome do campo, a string tem um máximo de 51 caracteres
  *  — no tipo do campo, a string tem um máximo de 11 caracteres
- *  — todos os registos são guardados como strings, porém, no caso de serem numeros (int), poderá haver desperdicio de
+ *  — todos os registos são guardados como strings, porém, no caso de serem números (int), poderá haver desperdicio de
  *    memória no caso de os números serem grandes, por exemplo:
  *      — 2 000 000 000 pode ser guardado como int, que só ocupa 4 bytes, mas como é guardado numa string,
- *        ocupa 11 bytes. Ou seja, se fizessemos uma transformação para int, poderiamos salvar 7 bytes.
+ *        ocupa 11 bytes. Ou seja, se fizéssemos uma transformação para int, poderíamos salvar 7 bytes.
  *      O mesmo se aplica para outros tipos de dados.
  */
 long int Memoria_Desperdicada_BDados(BDadosCoupe *BD) {
@@ -724,9 +724,8 @@ int SELECT(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
     if (!T) return INSUCESSO;
 
-    int i, contador = 0;
-    CAMPO *C = encontrar_indice_campo(T, nome_campo, &i);
-    if (!C) return INSUCESSO;
+    int i = encontrar_indice_campo(T, nome_campo), contador = 0;
+    if (i == -1) return INSUCESSO;
 
     NOG *registo = T->LRegistos->Inicio;
     while (registo) {
@@ -785,9 +784,8 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
     if (!T) return INSUCESSO;
 
-    int i, contador = 0, linha_removida = 0;
-    CAMPO *C = encontrar_indice_campo(T, nome_campo, &i);
-    if (!C) return INSUCESSO;
+    int i = encontrar_indice_campo(T, nome_campo), contador = 0, linha_removida = 0;
+    if (i == -1) return INSUCESSO;
 
     NOG *registo = T->LRegistos->Inicio;
     while (registo) {
@@ -846,10 +844,8 @@ int UPDATE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
     TABELA *T = Pesquisar_Tabela(BD, _tabela);
     if (!T) return INSUCESSO;
 
-    int i_comp, i_update, contador = 0;
-    CAMPO *C_comp = encontrar_indice_campo(T, campo_comp, &i_comp),
-            *C_update = encontrar_indice_campo(T, nome_campo_update, &i_update);
-    if (!C_comp || !C_update) return INSUCESSO;
+    int i_comp = encontrar_indice_campo(T, campo_comp), i_update = encontrar_indice_campo(T, nome_campo_update), contador = 0;
+    if (i_comp == -1 || i_update == -1) return INSUCESSO;
 
     size_t campo_update_len = sizeof(char) * (strlen(valor_campo_update) + 1);
 
@@ -910,14 +906,13 @@ int comparar_tabela(void *T1, void *T2) {
 }
 
 // Função auxiliar utilizada na função SELECT
-CAMPO *encontrar_indice_campo(TABELA *T, char *nome_campo, int *indice) {
+int encontrar_indice_campo(TABELA *T, char *nome_campo) {
     NOG *campo = T->LCampos->Inicio;
-    for (*indice = 0; *indice < T->LCampos->NEL; (*indice)++) {
-        CAMPO *C = (CAMPO *) campo->Info;
-        if (strcmp(C->NOME_CAMPO, nome_campo) == 0) return C;
+    for (int i = 0; i < T->LCampos->NEL; i++) {
+        if (strcmp(((CAMPO *) campo->Info)->NOME_CAMPO, nome_campo) == 0) return i;
         campo = campo->Prox;
     }
-    return NULL;
+    return -1;
 }
 
 // Função auxiliar utilizada na função DELETE

@@ -147,13 +147,12 @@ void Escrever_Tabela_Excel(FILE *f, TABELA *T);
 int comparar_tabela(void *T1, void *T2);
 
 /**
- * Retorna o primeiro campo que tenha o nome dado, e passa o seu indice pela variável indice
+ * Retorna o índice do primeiro campo com o nome passado
  * @param T Tabela a procurar o campo
  * @param nome_campo Nome do campo a procurar
- * @param indice Ponteiro para o indice do campo
- * @return Retorna o campo encontrado, ou NULL se não encontrar
+ * @return Retorna o índice do campo, ou -1 se não for encontrado
  */
-CAMPO *encontrar_indice_campo(TABELA *T, char *nome_campo, int *indice);
+int encontrar_indice_campo(TABELA *T, char *nome_campo);
 
 /**
  * Compara dois registos
