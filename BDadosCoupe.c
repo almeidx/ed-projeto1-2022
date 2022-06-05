@@ -697,7 +697,12 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela) {
 
     if (DELETE_TABLE_DATA(T) == INSUCESSO) return INSUCESSO;
 
-    return RemoveLG(BD->LTabelas, T, comparar_tabela) != NULL;
+    void *data = RemoveLG(BD->LTabelas, T, comparar_tabela);
+    if (data) {
+        free(data);
+        return SUCESSO;
+    }
+    return INSUCESSO;
 }
 
 // N)	Selecionar (Apresentar no ecran!) da base de dados todos os registos que obedeçam a uma dada condição,
@@ -791,11 +796,13 @@ int DELETE(BDadosCoupe *BD, char *_tabela, int (*f_condicao)(char *, char *), ch
                     NOG *prox = registo->Prox;
 
                     // Remover o registo inteiro da lista de registos
-                    RemoveLG(T->LRegistos, registo->Info, comparar_registos);
-
-                    contador++;
-                    registo = prox;
-                    linha_removida = 1;
+                    void *data = RemoveLG(T->LRegistos, registo->Info, comparar_registos);
+                    if (data) {
+                        free(data);
+                        contador++;
+                        registo = prox;
+                        linha_removida = 1;
+                    }
                 }
 
                 break;
