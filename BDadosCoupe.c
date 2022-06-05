@@ -699,7 +699,7 @@ int DROP_TABLE(BDadosCoupe *BD, char *nome_tabela) {
 
     void *data = RemoveLG(BD->LTabelas, T, comparar_tabela);
     if (data) {
-        free(data);
+        Destruir_Tabela(data);
         return SUCESSO;
     }
     return INSUCESSO;
